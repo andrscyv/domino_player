@@ -10,7 +10,12 @@ def deal_tiles():
 
     return tiles_by_player
 
-class DominoesState:
+class DominoAction:
+    def __init__(self, player, tiles):
+        self.player = player
+        self.tiles = tiles
+
+class DominoState:
 
     def __init__(self, current_player = 0, initial_state = None):
 

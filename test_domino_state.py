@@ -1,7 +1,7 @@
 import unittest
-from dominoes_state import DominoesState, deal_tiles
+from domino_state import DominoState, deal_tiles
 
-class TestDominoesState(unittest.TestCase):
+class TestDominoState(unittest.TestCase):
 
     def test_create_random_player_tiles(self):
         tiles_by_player = deal_tiles()
@@ -18,7 +18,7 @@ class TestDominoesState(unittest.TestCase):
         
 
     def test_get_possible_moves(self):
-        state = DominoesState( 1,{
+        state = DominoState( 1,{
             'tiles_by_player':[
                 [{0}, {1, 2}, {1, 5}, {6}, {5, 6}, {4, 6}], 
                 [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
@@ -31,7 +31,7 @@ class TestDominoesState(unittest.TestCase):
         self.assertEqual(state.get_possible_actions(), [{2,5}, {1,3}, {2,4}, {2}, {3,5}])
          
     def test_get_possible_moves_returns_pass_action(self):
-        state = DominoesState( 1,{
+        state = DominoState( 1,{
             'tiles_by_player':[
                 [{0}, {1, 2}, {1, 5}, {5, 6}, {4, 6}, {2,3}], 
                 [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
@@ -44,7 +44,7 @@ class TestDominoesState(unittest.TestCase):
         self.assertEqual(state.get_possible_actions(), [{-1}])
 
     def test_get_possible_moves_returns_all_tiles(self):
-        state = DominoesState( 1,{
+        state = DominoState( 1,{
             'tiles_by_player':[
                 [{0}, {1, 2}, {1, 5}, {5, 6},{6},{4, 6}, {2,3}], 
                 [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
