@@ -41,7 +41,10 @@ class DominoState:
 
     def next_state_from_action(self, action):
         tiles = [ tiles[:] for tiles in self._tiles_by_player ]
-        tiles[action.player].remove(action.tile)
+        try:
+            tiles[action.player].remove(action.tile)
+        except ValueError:
+            pass
         suits_at_ends = self._suits_at_ends
         
         return DominoState((action.player + 1) % 4, {

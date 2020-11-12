@@ -85,6 +85,46 @@ class TestDominoState(unittest.TestCase):
                 [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
         ])
 
+    def test_next_state_from_pass_action(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {6}, {5, 6}, {4, 6}], 
+                [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{2,3}
+        })
+        next_state = state.next_state_from_action(DominoAction(1, {-1}))
+        self.assertEqual(next_state._current_player, 2)
+        self.assertEqual(next_state._suits_at_ends, {2,3})
+        self.assertEqual(next_state._tiles_by_player, [
+                [{0}, {1, 2}, {1, 5}, {6}, {5, 6}, {4, 6}], 
+                [{5},{2,5},{0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+        ])
+
+    def test_next_state_from_single_value_tile_action(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {6}, {5, 6}, {4, 6}], 
+                [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{2,3}
+        })
+        next_state = state.next_state_from_action(DominoAction(1, {2}))
+        self.assertEqual(next_state._current_player, 2)
+        self.assertEqual(next_state._suits_at_ends, {2,3})
+        self.assertEqual(next_state._tiles_by_player, [
+                [{0}, {1, 2}, {1, 5}, {6}, {5, 6}, {4, 6}], 
+                [{5}, {2,5},{0, 5}, {1, 3}, {2, 4}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+        ])
+
     def test_next_state_from_action_creates_deep_copy(self):
         tiles_by_player = [
                 [{0}, {1, 2}, {1, 5}, {6}, {5, 6}, {4, 6}], 
@@ -102,4 +142,4 @@ class TestDominoState(unittest.TestCase):
         self.assertIn({0}, state._tiles_by_player[0])
         self.assertNotIn({0}, next_state._tiles_by_player[0])
         self.assertIn({2,5}, state._tiles_by_player[1])
-        self.assertIn({2,5}, next_state._tiles_by_player[1])
+        self.assertNotIn({2,5}, next_state._tiles_by_player[1])
