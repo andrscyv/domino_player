@@ -27,8 +27,9 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':{2,3}
         })
-
-        self.assertEqual(state.get_possible_actions(), [{2,5}, {1,3}, {2,4}, {2}, {3,5}])
+        actions = state.get_possible_actions()
+        self.assertEqual(actions.tiles, [{2,5}, {1,3}, {2,4}, {2}, {3,5}])
+        self.assertEqual(actions.player, 1)
          
     def test_get_possible_moves_returns_pass_action(self):
         state = DominoState( 1,{
@@ -41,7 +42,9 @@ class TestDominoState(unittest.TestCase):
             'suits_at_ends':{6}
         })
 
-        self.assertEqual(state.get_possible_actions(), [{-1}])
+        actions = state.get_possible_actions()
+        self.assertEqual(actions.tiles, [{-1}])
+        self.assertEqual(actions.player, 1)
 
     def test_get_possible_moves_returns_all_tiles(self):
         state = DominoState( 1,{
@@ -54,4 +57,6 @@ class TestDominoState(unittest.TestCase):
             'suits_at_ends': set()
         })
 
-        self.assertEqual(state.get_possible_actions(), [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}])
+        actions = state.get_possible_actions()
+        self.assertEqual(actions.tiles, [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}])
+        self.assertEqual(actions.player, 1)

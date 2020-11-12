@@ -37,4 +37,4 @@ class DominoState:
             if len(possible_actions) == 0:
                 possible_actions = [{-1}]
             
-        return possible_actions
+        return DominoAction(self._current_player, possible_actions)
