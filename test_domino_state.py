@@ -1,4 +1,4 @@
-import unittes
+import unittest
 from domino_state import DominoState, DominoAction, deal_tiles, sum_points
 import copy
 
@@ -289,3 +289,55 @@ class TestDominoState(unittest.TestCase):
             'suits_at_ends':{2}
         })
         self.assertTrue(state.is_terminal())
+    
+    def test_action_is_legal(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {5, 6}, {4, 6}, {6}], 
+                [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{2,3}
+        })
+        action = DominoAction(1, {2,5})
+        self.assertTrue(state._is_action_legal(action))
+
+    def test_action_is_legal_tile_doesnt_belong_to_player(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {5, 6}, {4, 6}, {6}], 
+                [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{2,3}
+        })
+        action = DominoAction(1, {1,2})
+        self.assertFalse(state._is_action_legal(action))
+
+    def test_action_is_ilegal_tile_isnt_playable(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {5, 6}, {4, 6}, {6}], 
+                [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{2,3}
+        })
+        action = DominoAction(1, {5})
+        self.assertFalse(state._is_action_legal(action))
+
+    def test_action_is_ilegal_not_current_player(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {5, 6}, {4, 6}, {6}], 
+                [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{2,3}
+        })
+        action = DominoAction(0, {1,2})
+        self.assertFalse(state._is_action_legal(action))

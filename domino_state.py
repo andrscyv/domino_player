@@ -1,4 +1,5 @@
 import random
+from mctspy.games.common import  AbstractGameAction
 
 def deal_tiles():
     tiles = [ {i,k} for i in range(7) for k in range(i,7)]
@@ -22,10 +23,13 @@ def sum_points(tiles):
 
     return points
 
-class DominoAction:
+class DominoAction(AbstractGameAction):
     def __init__(self, player, tile):
         self.player = player
         self.tile = tile
+
+    def __repr__(self):
+        return f"player:{self.player} tile: {self.tile}"
 
 class DominoState:
     team_1 = 1
@@ -107,3 +111,11 @@ class DominoState:
                 return self.team_1
             else:
                 return self.team_2
+
+    def _is_action_legal(self,action):
+        is_performed_by_current_player = action.player == self._current_player
+        tile_belongs_to_current_player = action.tile in self._tiles_by_player[self._current_player]
+        tile_is_playable = bool(action.tile & self._suits_at_ends)
+
+        return is_performed_by_current_player and tile_belongs_to_current_player and tile_is_playable
+
