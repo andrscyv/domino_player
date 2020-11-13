@@ -1,5 +1,5 @@
 import unittest
-from domino_state import DominoState, DominoAction, deal_tiles
+from domino_state import DominoState, DominoAction, deal_tiles, sum_points
 import copy
 
 class TestDominoState(unittest.TestCase):
@@ -143,3 +143,89 @@ class TestDominoState(unittest.TestCase):
         self.assertNotIn({0}, next_state._tiles_by_player[0])
         self.assertIn({2,5}, state._tiles_by_player[1])
         self.assertNotIn({2,5}, next_state._tiles_by_player[1])
+    
+    def test_game_is_closed(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{4, 6}, {5,3}], 
+                [{3, 5}], 
+                [{4} ], 
+                [{4,1}]
+                ],
+            'suits_at_ends':{2}
+        })
+
+        self.assertTrue(state._game_is_closed())
+
+    def test_game_is_not_closed(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{4, 6}, {5,3}], 
+                [{3, 5}], 
+                [{4} ], 
+                [{4,1}]
+                ],
+            'suits_at_ends':{2,1}
+        })
+
+        self.assertFalse(state._game_is_closed())
+
+    def test_sum_points_no_double(self):
+        tiles = [{2,3}, {3,4},{4,2},{1,0}]
+        self.assertEqual(19, sum_points(tiles))
+
+    def test_sum_points_with_doubles(self):
+        tiles = [{3}, {0,4},{4,2},{1},{2,0}]
+        self.assertEqual(20, sum_points(tiles))
+
+    def test_team1_has_fewer_points(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{4, 2}, {5,1}], 
+                [{5}], 
+                [{2} ], 
+                [{4,6}]
+                ],
+            'suits_at_ends':{3}
+        })
+
+        self.assertEqual(state._team_with_fewer_points(), state.team_1)
+
+    def test_team2_has_fewer_points(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{4, 6}, {5,1}], 
+                [{3, 1}], 
+                [{4} ], 
+                [{4,3}]
+                ],
+            'suits_at_ends':{2}
+        })
+
+        self.assertEqual(state._team_with_fewer_points(), state.team_2)
+
+    def test_teams_have_same_amount_of_points(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{4, 6}, {5,1}], 
+                [{3, 1},{5} ], 
+                [{4} ], 
+                [{4,3}, {3,0}]
+                ],
+            'suits_at_ends':{2}
+        })
+
+        self.assertEqual(state._team_with_fewer_points(), 0)
+
+
+    def test_calc_reward(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{4, 6}], 
+                [{3, 5}], 
+                [{4} ], 
+                []
+                ],
+            'suits_at_ends':{4,3}
+        })
+        self.assertEqual(state.calc_reward(), -1)

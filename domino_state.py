@@ -10,12 +10,26 @@ def deal_tiles():
 
     return tiles_by_player
 
+def sum_points(tiles):
+    points = 0
+
+    for tile in tiles:
+        if len(tile) > 1:
+            points += sum(tile)
+        else:
+            assert(len(tile) == 1)
+            points += 2* sum(tile)
+
+    return points
+
 class DominoAction:
     def __init__(self, player, tile):
         self.player = player
         self.tile = tile
 
 class DominoState:
+    team_1 = 1
+    team_2 = -1
 
     def __init__(self, current_player = 0, initial_state = None):
 
@@ -51,3 +65,40 @@ class DominoState:
             'tiles_by_player':tiles,
             'suits_at_ends': suits_at_ends if len(action.tile) == 1 else suits_at_ends.symmetric_difference(action.tile)
         })
+    
+    def calc_reward(self):
+        num_tiles_by_player = [ len(tiles) for tiles in self._tiles_by_player ]
+
+        if 0 in num_tiles_by_player:
+            if num_tiles_by_player.index(0) % 2 == 0:
+                reward = self.team_1
+            else:
+                reward = self.team_2
+        else:
+            if self._game_is_closed():
+                reward = self._team_with_fewer_points()
+            else:
+                reward = 0
+
+        return reward
+
+    def _game_is_closed(self):
+
+        for tiles in self._tiles_by_player:
+            for tile in tiles:
+                if tile & self._suits_at_ends:
+                    return False
+
+        return True
+
+    def _team_with_fewer_points(self):
+        points_team_1 = sum_points(self._tiles_by_player[0] + self._tiles_by_player[2])
+        points_team_2 = sum_points(self._tiles_by_player[1] + self._tiles_by_player[3])
+
+        if points_team_1 ==  points_team_2:
+            return 0
+        else:
+            if points_team_1 < points_team_2:
+                return self.team_1
+            else:
+                return self.team_2
