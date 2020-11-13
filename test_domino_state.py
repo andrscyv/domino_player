@@ -1,4 +1,4 @@
-import unittest
+import unittes
 from domino_state import DominoState, DominoAction, deal_tiles, sum_points
 import copy
 
@@ -218,8 +218,8 @@ class TestDominoState(unittest.TestCase):
         self.assertEqual(state._team_with_fewer_points(), 0)
 
 
-    def test_calc_reward(self):
-        state = DominoState( 1,{
+    def test_calc_reward_team2_win(self):
+        state = DominoState( 0,{
             'tiles_by_player':[
                 [{4, 6}], 
                 [{3, 5}], 
@@ -229,3 +229,63 @@ class TestDominoState(unittest.TestCase):
             'suits_at_ends':{4,3}
         })
         self.assertEqual(state.calc_reward(), -1)
+
+    def test_calc_reward_team1_win(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [], 
+                [{3, 5}], 
+                [{4} ], 
+                [{5}]
+                ],
+            'suits_at_ends':{4,3}
+        })
+        self.assertEqual(state.calc_reward(), 1)
+
+    def test_calc_reward_team1_win_by_points(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{5,0}], 
+                [{3, 5}], 
+                [{0} ], 
+                [{5}]
+                ],
+            'suits_at_ends':{2}
+        })
+        self.assertEqual(state.calc_reward(), 1)
+
+    def test_calc_reward_team2_win_by_points(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{5,4}], 
+                [{3, 5}], 
+                [{6} ], 
+                [{5}]
+                ],
+            'suits_at_ends':{2}
+        })
+        self.assertEqual(state.calc_reward(), -1)
+
+    def test_is_terminal_team1_win(self):
+        state = DominoState( 0,{
+            'tiles_by_player':[
+                [{5,4}], 
+                [{3, 5}], 
+                [{6} ], 
+                []
+                ],
+            'suits_at_ends':{2}
+        })
+        self.assertTrue(state.is_terminal())
+
+    def test_is_terminal_game_closed(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{5,4}], 
+                [{3, 5}], 
+                [{6} ], 
+                [{1,0}]
+                ],
+            'suits_at_ends':{2}
+        })
+        self.assertTrue(state.is_terminal())

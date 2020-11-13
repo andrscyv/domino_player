@@ -82,6 +82,11 @@ class DominoState:
 
         return reward
 
+    def is_terminal(self):
+        num_tiles_by_player = [ len(tiles) for tiles in self._tiles_by_player ]
+        return (0 in num_tiles_by_player) or self._game_is_closed()
+
+
     def _game_is_closed(self):
 
         for tiles in self._tiles_by_player:
