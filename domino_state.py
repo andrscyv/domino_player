@@ -118,8 +118,9 @@ class DominoState:
         is_performed_by_current_player = action.player == self._current_player
         tile_belongs_to_current_player = action.tile in self._tiles_by_player[self._current_player]
         tile_is_playable = bool(action.tile & self._suits_at_ends) or (not self._suits_at_ends)
+        action_is_to_pass = action.tile == {-1}
 
-        return is_performed_by_current_player and tile_belongs_to_current_player and tile_is_playable
+        return is_performed_by_current_player and ((tile_belongs_to_current_player and tile_is_playable) or action_is_to_pass)
 
     def current_team(self):
         return self.team_1 if self._current_player % 2 == 0 else self.team_2
