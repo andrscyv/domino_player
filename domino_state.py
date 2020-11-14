@@ -35,7 +35,7 @@ class DominoState:
     team_1 = 1
     team_2 = -1
 
-    def __init__(self, current_player = 0, initial_state = None):
+    def __init__(self, current_player = 0, initial_state = None, action = None):
 
         self._current_player = current_player
 
@@ -45,6 +45,9 @@ class DominoState:
         else:
             self._tiles_by_player = initial_state['tiles_by_player']
             self._suits_at_ends = initial_state['suits_at_ends']
+
+        if action:
+            self.action = action
 
     def get_possible_actions(self):
         if not self._suits_at_ends:
@@ -68,7 +71,7 @@ class DominoState:
         return DominoState((action.player + 1) % 4, {
             'tiles_by_player':tiles,
             'suits_at_ends': suits_at_ends if len(action.tile) == 1 else suits_at_ends.symmetric_difference(action.tile)
-        })
+        }, action = action)
     
     def calc_reward(self):
         num_tiles_by_player = [ len(tiles) for tiles in self._tiles_by_player ]
