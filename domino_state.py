@@ -28,7 +28,7 @@ def calculate_suits_at_ends(previous_suits, tile_played, suit_played):
     if tile_played == {-1}: # {-1} represents that player pass
         return previous_suits
 
-    if previous_suits == {}: #at begining of game
+    if previous_suits == set(): #at begining of game
         return tile_played
 
     if len(tile_played) == 1 : #double doesnt change suits
@@ -61,7 +61,7 @@ class DominoState:
 
         if initial_state is None:
             self._tiles_by_player = deal_tiles()
-            self._suits_at_ends = {} 
+            self._suits_at_ends = set() 
         else:
             self._tiles_by_player = initial_state['tiles_by_player']
             self._suits_at_ends = initial_state['suits_at_ends']

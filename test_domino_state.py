@@ -1,5 +1,5 @@
 import unittest
-from domino_state import DominoState, DominoAction, deal_tiles, sum_points
+from domino_state import DominoState, DominoAction, deal_tiles, sum_points, calculate_suits_at_ends
 import copy
 
 class TestDominoState(unittest.TestCase):
@@ -214,7 +214,7 @@ class TestDominoState(unittest.TestCase):
                 [{4} ], 
                 [{4,1}]
                 ],
-            'suits_at_ends':{}
+            'suits_at_ends':set()
         })
 
         self.assertFalse(state._game_is_closed())
@@ -440,4 +440,17 @@ class TestDominoState(unittest.TestCase):
             'suits_at_ends':{2,3}
         })
         self.assertEqual(state.current_team(), 1)
+
+    def test_calculate_suits_at_ends(self):
+        self.assertEqual(
+            calculate_suits_at_ends({2,3}, {3,4}, 3),
+            {2,4}
+            )
+
+    def test_calculate_suits_at_ends_beginning_of_game(self):
+        self.assertEqual(
+            calculate_suits_at_ends(set(), {3,4}, 3),
+            {3,4}
+            )
+
 

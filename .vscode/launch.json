@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "main.py",
+            "name": "simulation.py",
             "type": "python",
             "request": "launch",
-            "program": "main.py",
+            "program": "simulation.py",
             "console": "integratedTerminal",
             "justMyCode": false
         }
