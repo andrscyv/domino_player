@@ -315,6 +315,19 @@ class TestDominoState(unittest.TestCase):
         })
         action = DominoAction(1, {2,5})
         self.assertTrue(state._is_action_legal(action))
+    
+    def test_action_is_legal_at_start(self):
+        state = DominoState( 0,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {5, 6}, {4, 6}, {6}, {2,3}], 
+                [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':set()
+        })
+        action = DominoAction(0, {2,3})
+        self.assertTrue(state._is_action_legal(action))
 
     def test_action_is_legal_tile_doesnt_belong_to_player(self):
         state = DominoState( 1,{
