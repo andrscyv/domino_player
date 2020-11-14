@@ -64,6 +64,22 @@ class TestDominoState(unittest.TestCase):
         for action in actions:
             self.assertIn(action.tile, [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}])
             self.assertEqual(action.player, 1)
+
+    def test_get_possible_moves_when_different_playable_suits(self):
+        state = DominoState( 0,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {3,5}, {5, 6}, {4, 6}], 
+                [{5}, {0, 3}, {0, 5}, {1, 3}, {2, 4}, {6}], 
+                [{4}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{5,3}
+        })
+        actions = [ (action.player, action.tile, action.suit_played) for action in state.get_possible_actions() ]
+        expected_actions = [(0,{1, 5},5), (0, {6, 5},5) , (0,{3, 5}, 3), (0, {3,5},5)]
+        for action in actions:
+            self.assertIn(action, expected_actions)
+
         
     def test_next_state_from_action(self):
         state = DominoState( 1,{
@@ -75,7 +91,7 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':{2,3}
         })
-        next_state = state.next_state_from_action(DominoAction(1, {2,5}))
+        next_state = state.next_state_from_action(DominoAction(1, {2,5}, 2))
         self.assertEqual(next_state._current_player, 2)
         self.assertEqual(next_state._suits_at_ends, {5,3})
         self.assertEqual(next_state._tiles_by_player, [
@@ -83,6 +99,26 @@ class TestDominoState(unittest.TestCase):
                 [{5},{0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
                 [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
                 [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+        ])
+        
+    def test_next_state_from_action_two_compatible_suits_at_ends(self):
+        state = DominoState( 0,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {3,5}, {5, 6}, {4, 6}], 
+                [{5}, {0, 3}, {0, 5}, {1, 3}, {2, 4}, {6}], 
+                [{4}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{5,3}
+        })
+        next_state = state.next_state_from_action(DominoAction(0, {3,5}, 5))
+        self.assertEqual(next_state._current_player, 1)
+        self.assertEqual(next_state._suits_at_ends, {3})
+        self.assertEqual(next_state._tiles_by_player, [
+                [{0}, {1, 2}, {1, 5}, {5, 6}, {4, 6}], 
+                [{5}, {0, 3}, {0, 5}, {1, 3}, {2, 4}, {6}], 
+                [{4}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
         ])
 
     def test_next_state_from_pass_action(self):
@@ -95,7 +131,7 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':{2,3}
         })
-        next_state = state.next_state_from_action(DominoAction(1, {-1}))
+        next_state = state.next_state_from_action(DominoAction(1, {-1}, None))
         self.assertEqual(next_state._current_player, 2)
         self.assertEqual(next_state._suits_at_ends, {2,3})
         self.assertEqual(next_state._tiles_by_player, [
@@ -115,7 +151,7 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':{2,3}
         })
-        next_state = state.next_state_from_action(DominoAction(1, {2}))
+        next_state = state.next_state_from_action(DominoAction(1, {2}, 2))
         self.assertEqual(next_state._current_player, 2)
         self.assertEqual(next_state._suits_at_ends, {2,3})
         self.assertEqual(next_state._tiles_by_player, [
@@ -136,7 +172,7 @@ class TestDominoState(unittest.TestCase):
             'tiles_by_player':copy.deepcopy(tiles_by_player),
             'suits_at_ends':{2,3}
         })
-        next_state = state.next_state_from_action(DominoAction(1, {2,5}))
+        next_state = state.next_state_from_action(DominoAction(1, {2,5},2))
         next_state._tiles_by_player[0].remove({0})
         self.assertEqual(tiles_by_player, state._tiles_by_player)
         self.assertIn({0}, state._tiles_by_player[0])
@@ -313,7 +349,7 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':{2,3}
         })
-        action = DominoAction(1, {2,5})
+        action = DominoAction(1, {2,5},2)
         self.assertTrue(state._is_action_legal(action))
     
     def test_action_is_legal_at_start(self):
@@ -326,7 +362,7 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':set()
         })
-        action = DominoAction(0, {2,3})
+        action = DominoAction(0, {2,3},None)
         self.assertTrue(state._is_action_legal(action))
 
     def test_action_is_legal_tile_doesnt_belong_to_player(self):
@@ -339,7 +375,7 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':{2,3}
         })
-        action = DominoAction(1, {1,2})
+        action = DominoAction(1, {1,2},2)
         self.assertFalse(state._is_action_legal(action))
 
     def test_action_is_ilegal_tile_isnt_playable(self):
@@ -352,7 +388,7 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':{2,3}
         })
-        action = DominoAction(1, {5})
+        action = DominoAction(1, {5},5)
         self.assertFalse(state._is_action_legal(action))
 
     def test_action_is_ilegal_not_current_player(self):
@@ -365,7 +401,7 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':{2,3}
         })
-        action = DominoAction(0, {1,2})
+        action = DominoAction(0, {1,2},2)
         self.assertFalse(state._is_action_legal(action))
 
     def test_pass_action_is_legal(self):
@@ -378,7 +414,7 @@ class TestDominoState(unittest.TestCase):
                 ],
             'suits_at_ends':{6}
         })
-        action = DominoAction(1, {-1})
+        action = DominoAction(1, {-1}, None)
         self.assertTrue(state._is_action_legal(action))
 
     def test_current_team_is_team1(self):
