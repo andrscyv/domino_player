@@ -5,6 +5,7 @@ class DominoGameState(TwoPlayersAbstractGameState):
 
     def __init__(self, state, next_to_move=1):
         self._state = state
+        self.next_to_move = next_to_move
 
     @property
     def game_result(self):
