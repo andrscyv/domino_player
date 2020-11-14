@@ -453,4 +453,22 @@ class TestDominoState(unittest.TestCase):
             {3,4}
             )
 
+    def test_calculate_suits_at_ends_pass_action(self):
+        self.assertEqual(
+            calculate_suits_at_ends({3,4}, {-1}, None),
+            {3,4}
+            )
+
+    def test_calculate_suits_at_ends_double_suit(self):
+        self.assertEqual(
+            calculate_suits_at_ends({3}, {3,5}, 3),
+            {3,5}
+            )
+
+    def test_calculate_suits_at_ends_double_tile(self):
+        self.assertEqual(
+            calculate_suits_at_ends({3,2}, {2}, 2),
+            {3,2}
+            )
+
 
