@@ -121,6 +121,9 @@ class DominoState:
 
         return is_performed_by_current_player and tile_belongs_to_current_player and tile_is_playable
 
+    def current_team(self):
+        return self.team_1 if self._current_player % 2 == 0 else self.team_2
+
     def __repr__(self):
         return f" <Player:{self._current_player} suits_at_ends: {self._suits_at_ends}>"
 

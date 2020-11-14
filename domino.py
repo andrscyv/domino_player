@@ -3,8 +3,8 @@ from mctspy.games.common import TwoPlayersAbstractGameState
 
 class DominoGameState(TwoPlayersAbstractGameState):
 
-    def __init__(self, state, next_to_move=0):
-        self._state = DominoState(next_to_move, initial_state=state)
+    def __init__(self, state, next_to_move=1):
+        self._state = state
 
     @property
     def game_result(self):
@@ -22,7 +22,8 @@ class DominoGameState(TwoPlayersAbstractGameState):
                 f"move {move} for state {self._state} is not legal"
             )
 
-        return self._state.next_state_from_action(move)
+        next_state = self._state.next_state_from_action(move)
+        return DominoGameState(next_state, next_to_move = next_state.current_team())
     
     def get_legal_actions(self):
         return self._state.get_possible_actions()

@@ -367,3 +367,28 @@ class TestDominoState(unittest.TestCase):
         })
         action = DominoAction(0, {1,2})
         self.assertFalse(state._is_action_legal(action))
+
+    def test_current_team_is_team1(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {5, 6}, {4, 6}, {6}], 
+                [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{2,3}
+        })
+        self.assertEqual(state.current_team(), -1)
+
+    def test_current_team_is_team1(self):
+        state = DominoState( 2,{
+            'tiles_by_player':[
+                [{0}, {1, 2}, {1, 5}, {5, 6}, {4, 6}, {6}], 
+                [{5}, {2, 5}, {0, 5}, {1, 3}, {2, 4}, {2}, {3, 5}], 
+                [{4}, {3}, {4, 5}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
+                [{3, 4}, {0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 6}, {1}]
+                ],
+            'suits_at_ends':{2,3}
+        })
+        self.assertEqual(state.current_team(), 1)
+

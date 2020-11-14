@@ -40,10 +40,11 @@ import numpy
 if __name__ == "__main__":
     global game , current_player
     current_player = 0
-    game = DominoGameState({
+    state = DominoState(0, {
         'tiles_by_player': deal_tiles(),
         'suits_at_ends': set()
     })
+    game = DominoGameState(state)
     root = TwoPlayersGameMonteCarloTreeSearchNode(state = game)
     mcts = MonteCarloTreeSearch(root)
     action = mcts.best_action(1)
