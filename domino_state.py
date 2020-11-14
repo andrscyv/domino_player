@@ -92,6 +92,8 @@ class DominoState:
 
 
     def _game_is_closed(self):
+        if not self._suits_at_ends:
+            return False
 
         for tiles in self._tiles_by_player:
             for tile in tiles:

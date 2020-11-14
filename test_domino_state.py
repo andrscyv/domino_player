@@ -170,6 +170,19 @@ class TestDominoState(unittest.TestCase):
 
         self.assertFalse(state._game_is_closed())
 
+    def test_game_is_not_closed_if_no_suits_at_ends(self):
+        state = DominoState( 1,{
+            'tiles_by_player':[
+                [{4, 6}, {5,3}], 
+                [{3, 5}], 
+                [{4} ], 
+                [{4,1}]
+                ],
+            'suits_at_ends':{}
+        })
+
+        self.assertFalse(state._game_is_closed())
+
     def test_sum_points_no_double(self):
         tiles = [{2,3}, {3,4},{4,2},{1,0}]
         self.assertEqual(19, sum_points(tiles))
