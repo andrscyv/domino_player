@@ -66,8 +66,7 @@ class DominoState:
             self._tiles_by_player = initial_state['tiles_by_player']
             self._suits_at_ends = initial_state['suits_at_ends']
 
-        if action:
-            self.action = action
+        self.action = action
 
     def get_possible_actions(self):
         player_tiles = self._tiles_by_player[self._current_player]
