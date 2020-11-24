@@ -1,6 +1,9 @@
 import random
 from mctspy.games.common import  AbstractGameAction
 
+def build_tiles():
+    return { frozenset({i,k}) for i in range(7) for k in (range(i,7))}
+    
 def deal_tiles():
     tiles = [ {i,k} for i in range(7) for k in range(i,7)]
     tiles_by_player = []

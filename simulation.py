@@ -4,6 +4,7 @@ from domino import DominoGameState
 from domino_state import deal_tiles, DominoState, DominoAction
 import random
 import pprint
+from pimc import pimc_decision
 
 def play_mcts(state):
     root = TwoPlayersGameMonteCarloTreeSearchNode(state = DominoGameState(state))
@@ -20,6 +21,9 @@ def play_greedy(state):
     index_of_greedy_action  = pips_of_actions.index(max(pips_of_actions))
     
     return state.next_state_from_action(actions[index_of_greedy_action]) 
+
+def play_pimc(state):
+    pass
 
 def print_state(state):
     if not state.action:
