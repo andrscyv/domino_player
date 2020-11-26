@@ -41,9 +41,10 @@ def pimc_decision(suits_at_ends, my_tiles, played_tiles, num_tiles_by_player, sa
         })
         decision_list.append(mcts_decision(state))
 
-    decision_list = [ s.action.tile for s in decision_list]
-    counter = collections.Counter([ frozenset(tile) for tile in decision_list ])
-    return set(counter.most_common(1)[0][0])
+    decision_list = [ (frozenset(s.action.tile), s.action.suit_played) for s in decision_list]
+    counter = collections.Counter(decision_list)
+    tile, suit = counter.most_common(1)[0][0]
+    return (set(tile), suit)
     
 if __name__ == "__main__":
     tiles_by_player = [
@@ -58,7 +59,7 @@ if __name__ == "__main__":
         tiles_by_player[0], 
         played_tiles, 
         [len(tiles) for tiles in tiles_by_player],
-        1000)
+        100)
     print(decision)
 
 

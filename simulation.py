@@ -22,8 +22,18 @@ def play_greedy(state):
     
     return state.next_state_from_action(actions[index_of_greedy_action]) 
 
-def play_pimc(state):
-    pass
+def play_pimc(state, game):
+    played_tiles = { frozenset(s.action.tile) for s in game}
+    my_tiles = state._tiles_by_player[state._current_player]
+    num_tiles_by_player = [len(tiles) for tiles in state._tiles_by_player]
+    tile, suit_played = pimc_decision(
+        state._suits_at_ends,
+        my_tiles,
+        played_tiles,
+        num_tiles_by_player
+    )
+
+    return state.next_state_from_action(DominoAction(state._current_player, tile, suit_played))
 
 def print_state(state):
     if not state.action:
@@ -42,15 +52,17 @@ def play_game():
     # pp = pprint.PrettyPrinter()
     # print(f"Starts player {first_player}" )
     # pp.pprint(state._tiles_by_player)
+    game = []
     while not state.is_terminal():
         # print("=======================================")
         # pp.pprint(state._tiles_by_player[state._current_player])
         if state._current_player in [0,2]:
-            state = play_mcts(state)
+            # state = play_mcts(state)
+            state = play_pimc(state, game)
         else:
             state = play_greedy(state)
-        # game.append(state)
-        # print_state(state)
+        game.append(state)
+        print_state(state)
     # print("winneeeer", state.calc_reward())
     # pp.pprint(state._tiles_by_player)
 
@@ -59,7 +71,7 @@ def play_game():
 
 if __name__ == "__main__":
     global num_simulations
-    num_simulations = 500
+    num_simulations = 1
     game_results = []
     for i in range(100):
         game_results.append(play_game())
