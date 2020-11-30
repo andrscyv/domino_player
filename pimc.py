@@ -25,9 +25,9 @@ def sample_combinations(iterable, r, sample_size):
 def sample_hands_uniformly(played_tiles, player_tiles,  num_tiles_by_player, sample_size):
     tiles = build_tiles()
     tiles_not_played = (tiles - played_tiles) - player_tiles
-    first_hand_sample = sample_combinations(tiles_not_played,num_tiles_by_player[0], sample_size)
-    second_hand_sample = [ random_combination(tiles_not_played - first_hand, num_tiles_by_player[1]) for first_hand in first_hand_sample]
-    third_hand_sample = [ first_hand_sample[i] - second_hand_sample[i] for i in range(sample_size)]
+    first_hand_sample = sample_combinations(tiles_not_played,num_tiles_by_player[1], sample_size)
+    second_hand_sample = [ random_combination(tiles_not_played - first_hand, num_tiles_by_player[2]) for first_hand in first_hand_sample]
+    third_hand_sample = [ (tiles_not_played - first_hand_sample[i]) - second_hand_sample[i] for i in range(sample_size)]
 
     return first_hand_sample, second_hand_sample, third_hand_sample
 
@@ -43,6 +43,7 @@ def pimc_decision(suits_at_ends, my_tiles, played_tiles, num_tiles_by_player, sa
 
 
     decision_list = []
+    my_tiles = [ set(tile) for tile in my_tiles]
     for i in range(sample_size):
         state = DominoState(0, {
             'tiles_by_player':[

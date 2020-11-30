@@ -24,7 +24,12 @@ class TestPimc(unittest.TestCase):
         first_hand_sample, second_hand_sample, third_hand_sample = sample_hands_uniformly(played_tiles, my_tiles, num_tiles_by_player, sample_size)
 
         for i in range(sample_size):
-            self.assertFalse(first_hand_sample[i]&second_hand_sample[i]&third_hand_sample[i]&my_tiles)
+            self.assertFalse(first_hand_sample[i]&second_hand_sample[i])
+            self.assertFalse(first_hand_sample[i]&third_hand_sample[i])
+            self.assertFalse(first_hand_sample[i]&my_tiles)
+            self.assertFalse(second_hand_sample[i]&third_hand_sample[i])
+            self.assertFalse(second_hand_sample[i]&my_tiles)
+            self.assertFalse(third_hand_sample[i]&my_tiles)
 
 
     def test_pimc_desicion(self):
