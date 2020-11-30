@@ -1,5 +1,6 @@
 import random
 from mctspy.games.common import  AbstractGameAction
+random.seed(30)
 
 def build_tiles():
     return { frozenset({i,k}) for i in range(7) for k in (range(i,7))}
