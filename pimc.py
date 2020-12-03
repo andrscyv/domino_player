@@ -71,7 +71,7 @@ if __name__ == "__main__":
     played_tiles = {frozenset({4,5}), frozenset({5,2}), frozenset({2,3}), frozenset({3,6})}
     decision = pimc_decision(
         {4,6},
-        tiles_by_player[0], 
+        { frozenset(tile) for tile in tiles_by_player[0]}, 
         played_tiles, 
         [len(tiles) for tiles in tiles_by_player],
         100)
