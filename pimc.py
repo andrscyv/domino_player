@@ -1,6 +1,6 @@
 from mctspy.tree.nodes import TwoPlayersGameMonteCarloTreeSearchNode
 from mctspy.tree.search import MonteCarloTreeSearch
-from domino import DominoGameState
+from domino_state_mctspy import DominoGameState
 import itertools
 import random
 from domino_state import DominoState, build_tiles

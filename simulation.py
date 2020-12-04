@@ -1,6 +1,6 @@
 from mctspy.tree.nodes import TwoPlayersGameMonteCarloTreeSearchNode
 from mctspy.tree.search import MonteCarloTreeSearch
-from domino import DominoGameState
+from domino_state_mctspy import DominoGameState
 from domino_state import deal_tiles, DominoState, DominoAction
 import random
 import pprint
