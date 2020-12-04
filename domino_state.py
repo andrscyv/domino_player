@@ -1,6 +1,6 @@
 import random
 from mctspy.games.common import  AbstractGameAction
-random.seed(30)
+# random.seed(30)
 
 def build_tiles():
     return { frozenset({i,k}) for i in range(7) for k in (range(i,7))}
@@ -53,7 +53,7 @@ class DominoAction(AbstractGameAction):
         self.suit_played = suit_played
 
     def __repr__(self):
-        return f"player:{self.player} tile: {self.tile}"
+        return f"suit:{self.suit_played} tile: {self.tile} p:{self.player}"
 
 class DominoState:
     team_1 = 1

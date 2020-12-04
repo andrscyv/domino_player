@@ -1,11 +1,11 @@
 from mctspy.tree.nodes import TwoPlayersGameMonteCarloTreeSearchNode
 from mctspy.tree.search import MonteCarloTreeSearch
-from domino_state_mctspy import DominoGameState
+from domino_mctspy import DominoGameState
 import itertools
 import random
 from domino_state import DominoState, build_tiles
 import collections
-random.seed(30)
+# random.seed(30)
 
 def mcts_decision(state, num_simulations = 100):
     root = TwoPlayersGameMonteCarloTreeSearchNode(state = DominoGameState(state))
