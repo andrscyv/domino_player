@@ -7,7 +7,7 @@ from domino_state import deal_tiles, DominoState, DominoAction
 import random
 from pprint import pformat
 from pimc import pimc_decision
-import sys
+import click
 
 def play_mcts(state, num_simulations):
     current_player = state._current_player
@@ -71,7 +71,30 @@ def log(message):
     if debug:
         print(message)
 
-def play_game(num_simulations, num_samples):
+def play_with_algo(algo, state, game, num_simulations, num_samples):
+    if algo == 'mcts':
+        return play_mcts(state, num_simulations)
+
+    if algo == 'greedy':
+        return play_greedy(state)
+
+    if algo == 'pimc':
+        return play_pimc(state, game, num_simulations, num_samples)
+
+    if algo == 'mcts_w':
+        return play_mcts(state, 20)
+        
+    if algo == 'mcts_m':
+        return play_mcts(state, 60)
+        
+    if algo == 'mcts_s':
+        return play_mcts(state, 100)
+        
+    if algo == 'mcts_ss':
+        return play_mcts(state, 250)
+        
+
+def play_game(players, num_simulations=100, num_samples=100):
     tiles_by_player = deal_tiles()
     first_player = random.choice([0,1,2,3])
     state = DominoState(first_player, {
@@ -86,15 +109,7 @@ def play_game(num_simulations, num_samples):
     while not state.is_terminal():
         log("=======================================")
         log(pformat(state._tiles_by_player[state._current_player]))
-        if state._current_player in [0,2]:
-            state = play_mcts(state, num_simulations)
-            # state = play_pimc(state, game)
-            # state = play_perfect(state)
-            # state = play_greedy(state)
-        else:
-            # state = play_greedy(state)
-            state = play_mcts(state, 100)
-            # state = play_pimc(state, game)
+        state = play_with_algo(players[state._current_player], state, game, num_simulations, num_samples)
         game.append(state)
         print_state(state)
     log(f"winneeeer {state.calc_reward()}")
@@ -107,24 +122,35 @@ def record_winner(tiles_by_player):
     winners.append(tiles_by_player)
 
 
-
-if __name__ == "__main__":
+@click.command()
+@click.option('-s','--simulations','num_simulations', default=100, help='number of simulations for MCTS')
+@click.option('-m','--samples','num_samples', default=100, help='number of samples for PIMC')
+@click.option('-t','--teams', nargs=2, default=('pimc', 'greedy') , help='Define algorithms by teams')
+@click.option('-p','--players', nargs=4 , help='Define algorithms by players')
+@click.option('-d','--debug','debug_flag', default=False , help='Enables debug output')
+@click.argument('num_games', type=int)
+def run(num_simulations, num_samples, teams, players, debug_flag, num_games):
     global debug
     global winners
     winners = []
     # random.seed(30)
-    assert(len(sys.argv) > 3)
-    num_simulations = int(sys.argv[1])
-    num_samples = int(sys.argv[2])
-    num_games = int(sys.argv[3])
-    debug = '--debug' in sys.argv
-    # players = sys.argv[3:7]
+    debug = debug_flag 
     game_results = []
+    if not players:
+        players = create_players(teams)
+
+    print(players)
     for i in range(num_games):
         print(f'... game {i}')
-        game_results.append(play_game(num_simulations, num_samples))
+        game_results.append(play_game(players, num_simulations, num_samples))
 
     print(f"Porcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}")
+
+def create_players(teams):
+    return (teams[0], teams[1], teams[0], teams[1])
+
+if __name__ == "__main__":
+    run()
 
 
 
