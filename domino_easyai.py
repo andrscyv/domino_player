@@ -42,9 +42,10 @@ class GameOfDomino( TwoPlayersGame ):
         print(self._state)
 
     def scoring(self): 
-        return 100 if game.win() else 0 # For the AI
+        return 100 if self.win() else 0 # For the AI
 
-# Start a match (and store the history of moves when it ends)
-ai = Negamax(32) # The AI will think 13 moves in advance
-game = GameOfDomino( [ Human_Player(), AI_Player(ai) ] )
-history = game.play()
+if __name__ == "__main__":
+    # Start a match (and store the history of moves when it ends)
+    ai = Negamax(32) # The AI will think 13 moves in advance
+    game = GameOfDomino( [ Human_Player(), AI_Player(ai) ] )
+    history = game.play()
