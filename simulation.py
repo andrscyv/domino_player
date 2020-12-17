@@ -148,7 +148,7 @@ def run(num_simulations, num_samples, teams, players, debug_flag, write, file_pa
         game_results.append(winner)
         games.append(game)
 
-    print(f"Porcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}")
+    print(f"\nPorcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}")
     config = {
             'players':players,
             'num_simulations':num_simulations,
