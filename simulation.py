@@ -106,7 +106,6 @@ def play_game(players, num_simulations=100, num_samples=100):
     log(f"Starts player {first_player}" )
     log("Tiles : " )
     log(pformat(state._tiles_by_player))
-    game = []
     while not state.is_terminal():
         log("=======================================")
         log(pformat(state._tiles_by_player[state._current_player]))
@@ -128,7 +127,7 @@ def record_winner(tiles_by_player):
 @click.option('-m','--samples','num_samples', default=100, help='number of samples for PIMC')
 @click.option('-t','--teams', nargs=2, default=('pimc', 'greedy') , help='Define algorithms by teams')
 @click.option('-p','--players', nargs=4 , help='Define algorithms by players')
-@click.option('-d','--debug','debug_flag', default=False , help='Enables debug output')
+@click.option('-d','--debug','debug_flag', is_flag=True , help='Enables debug output')
 @click.option('-w','--write', is_flag=True, help='Write games to file in ./simulations')
 @click.option('-f','--file','file_path', help='Write games to file_path')
 @click.argument('num_games', type=int)
@@ -143,21 +142,22 @@ def run(num_simulations, num_samples, teams, players, debug_flag, write, file_pa
     if not players:
         players = create_players(teams)
 
-    print(players)
     for i in range(num_games):
-        print(f'... game {i}')
+        print(f'\r... game {i}', end='')
         game, winner = play_game(players, num_simulations, num_samples)
         game_results.append(winner)
         games.append(game)
 
     print(f"Porcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}")
-    if write or file_path:
-        save_games_played({
+    config = {
             'players':players,
             'num_simulations':num_simulations,
-            'num_samples':num_samples
-        },
-        games, file_path)
+            'num_samples':num_samples,
+            'num_games':num_games
+    }
+    print(config)
+    if write or file_path:
+        save_games_played(config, games, file_path)
 
 
 def create_players(teams):
