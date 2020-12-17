@@ -39,7 +39,7 @@ def rotate(l, n):
 def play_pimc(state, game, num_simulations, num_samples):
 
 
-    played_tiles = { frozenset(s.action.tile) for s in game}
+    played_tiles = { frozenset(s.action.tile) for s in game[1:]}
     my_tiles = { frozenset(tile) for tile in state._tiles_by_player[state._current_player]}
     num_tiles_by_player = [len(tiles) for tiles in rotate(state._tiles_by_player,state._current_player)]
     tile, suit_played = pimc_decision(
@@ -148,14 +148,15 @@ def run(num_simulations, num_samples, teams, players, debug_flag, write, file_pa
         game_results.append(winner)
         games.append(game)
 
-    print(f"\nPorcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}")
     config = {
             'players':players,
             'num_simulations':num_simulations,
             'num_samples':num_samples,
             'num_games':num_games
     }
+    print(' ')
     print(config)
+    print(f"Porcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}")
     if write or file_path:
         save_games_played(config, games, file_path)
 
