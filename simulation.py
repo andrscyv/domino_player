@@ -143,7 +143,7 @@ def run(num_simulations, num_samples, teams, players, debug_flag, write, file_pa
         players = create_players(teams)
 
     for i in range(num_games):
-        print(f'\r... game {i}', end='')
+        print(f'\r... game {i}', end='', flush=True)
         game, winner = play_game(players, num_simulations, num_samples)
         game_results.append(winner)
         games.append(game)
