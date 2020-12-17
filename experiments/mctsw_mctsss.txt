@@ -1,0 +1,3 @@
+... game 0
+Porcentaje ganado 0.0
+{'players': ('mcts_w', 'mcts_ss', 'mcts_w', 'mcts_ss'), 'num_simulations': 5, 'num_samples': 100, 'num_games': 1}
