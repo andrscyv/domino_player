@@ -5,6 +5,7 @@ import itertools
 import random
 from domino_state import DominoState, build_tiles
 import collections
+import sys
 # random.seed(30)
 
 def mcts_decision(state, num_simulations = 100):
@@ -68,13 +69,17 @@ if __name__ == "__main__":
         [{4}, {3}, {0, 1}, {0, 6}, {1, 6}, {0, 2}], 
         [{0, 3}, {2, 6}, {1, 4}, {0, 4}, {3, 4}, {1}]
     ] 
+    assert(len(sys.argv) > 2)
+    mcts_simulations = int(sys.argv[1])
+    num_samples = int(sys.argv[2])
     played_tiles = {frozenset({4,5}), frozenset({5,2}), frozenset({2,3}), frozenset({3,6})}
     decision = pimc_decision(
         {4,6},
         { frozenset(tile) for tile in tiles_by_player[0]}, 
         played_tiles, 
         [len(tiles) for tiles in tiles_by_player],
-        100)
+        num_samples,
+        mcts_simulations)
     print(decision)
 
 
