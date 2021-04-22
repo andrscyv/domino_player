@@ -8,10 +8,10 @@ import collections
 import sys
 # random.seed(30)
 
-def mcts_decision(state, num_simulations = 100):
+def mcts_decision(state, num_simulations = None, total_simulation_seconds=1):
     root = TwoPlayersGameMonteCarloTreeSearchNode(state = DominoGameState(state))
     mcts = MonteCarloTreeSearch(root)
-    return mcts.best_action(num_simulations).state._state
+    return mcts.best_action(simulations_number=num_simulations, total_simulation_seconds=total_simulation_seconds).state._state
 
 def random_combination(iterable, r):
     "Random selection from itertools.combinations(iterable, r)"
@@ -33,7 +33,7 @@ def sample_hands_uniformly(played_tiles, player_tiles,  num_tiles_by_player, sam
     return first_hand_sample, second_hand_sample, third_hand_sample
 
 
-def pimc_decision(suits_at_ends, my_tiles, played_tiles, num_tiles_by_player, sample_size=100, mcts_simulations=100):
+def pimc_decision(suits_at_ends, my_tiles, played_tiles, num_tiles_by_player, sample_size=100, mcts_simulations=None, total_simulation_seconds=1):
 
     first_hand_sample, second_hand_sample, third_hand_sample = sample_hands_uniformly(played_tiles, my_tiles, num_tiles_by_player, sample_size)
 
@@ -55,7 +55,7 @@ def pimc_decision(suits_at_ends, my_tiles, played_tiles, num_tiles_by_player, sa
             ],
             'suits_at_ends':suits_at_ends
         })
-        decision_list.append(mcts_decision(state, mcts_simulations))
+        decision_list.append(mcts_decision(state, num_simulations=mcts_simulations, total_simulation_seconds=total_simulation_seconds))
 
     decision_list = [ (frozenset(s.action.tile), s.action.suit_played) for s in decision_list]
     counter = collections.Counter(decision_list)

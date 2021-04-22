@@ -10,7 +10,7 @@ from pimc import pimc_decision
 from stats import save_games_played
 import click
 
-def play_mcts(state, num_simulations):
+def play_mcts(state, num_simulations=None, total_simulation_seconds=1):
     current_player = state._current_player
     tiles_by_player = state._tiles_by_player
     aux_state = DominoState(0, {
@@ -19,7 +19,7 @@ def play_mcts(state, num_simulations):
     })
     root = TwoPlayersGameMonteCarloTreeSearchNode(state = DominoGameState(aux_state))
     mcts = MonteCarloTreeSearch(root)
-    best_action = mcts.best_action(num_simulations).state._state.action
+    best_action = mcts.best_action(simulations_number=num_simulations, total_simulation_seconds=total_simulation_seconds).state._state.action
     return state.next_state_from_action(DominoAction(current_player, best_action.tile, best_action.suit_played))
 
 def play_greedy(state):
@@ -36,7 +36,7 @@ def play_greedy(state):
 def rotate(l, n):
     return l[n:] + l[:n]
 
-def play_pimc(state, game, num_simulations, num_samples):
+def play_pimc(state, game, num_samples, num_simulations=None, total_simulation_seconds=1 ):
 
 
     played_tiles = { frozenset(s.action.tile) for s in game[1:]}
@@ -48,7 +48,8 @@ def play_pimc(state, game, num_simulations, num_samples):
         played_tiles,
         num_tiles_by_player,
         num_samples, 
-        num_simulations 
+        mcts_simulations=num_simulations,
+        total_simulation_seconds=total_simulation_seconds
     )
 
     return state.next_state_from_action(DominoAction(state._current_player, tile, suit_played))
@@ -72,15 +73,15 @@ def log(message):
     if debug:
         print(message)
 
-def play_with_algo(algo, state, game, num_simulations, num_samples):
+def play_with_algo(algo, state, game, num_samples, num_simulations=None, total_simulation_seconds=1):
     if algo == 'mcts':
-        return play_mcts(state, num_simulations)
+        return play_mcts(state, num_simulations=num_simulations, total_simulation_seconds=total_simulation_seconds)
 
     if algo == 'greedy':
         return play_greedy(state)
 
     if algo == 'pimc':
-        return play_pimc(state, game, num_simulations, num_samples)
+        return play_pimc(state, game, num_samples, num_simulations=num_simulations, total_simulation_seconds=total_simulation_seconds)
 
     if algo == 'mcts_w':
         return play_mcts(state, 20)
@@ -95,7 +96,7 @@ def play_with_algo(algo, state, game, num_simulations, num_samples):
         return play_mcts(state, 250)
         
 
-def play_game(players, num_simulations=100, num_samples=100):
+def play_game(players, num_samples=100, num_simulations=None, total_simulation_seconds=1):
     tiles_by_player = deal_tiles()
     first_player = random.choice([0,1,2,3])
     state = DominoState(first_player, {
@@ -109,7 +110,14 @@ def play_game(players, num_simulations=100, num_samples=100):
     while not state.is_terminal():
         log("=======================================")
         log(pformat(state._tiles_by_player[state._current_player]))
-        state = play_with_algo(players[state._current_player], state, game, num_simulations, num_samples)
+        state = play_with_algo(
+            players[state._current_player],
+            state,
+            game,
+            num_samples,
+            num_simulations=num_simulations,
+            total_simulation_seconds=total_simulation_seconds
+        )
         game.append(state)
         print_state(state)
     log(f"winneeeer {state.calc_reward()}")
@@ -123,7 +131,8 @@ def record_winner(tiles_by_player):
 
 
 @click.command()
-@click.option('-s','--simulations','num_simulations', default=100, help='number of simulations for MCTS')
+@click.option('-s','--simulations','num_simulations', default=None, help='number of simulations for MCTS', type=int)
+@click.option('-b','--time-budget','total_simulation_seconds', default=1, help='Time budget for simulations in seconds', type=float)
 @click.option('-m','--samples','num_samples', default=100, help='number of samples for PIMC')
 @click.option('-t','--teams', nargs=2, default=('pimc', 'greedy') , help='Define algorithms by teams')
 @click.option('-p','--players', nargs=4 , help='Define algorithms by players')
@@ -131,7 +140,7 @@ def record_winner(tiles_by_player):
 @click.option('-w','--write', is_flag=True, help='Write games to file in ./simulations')
 @click.option('-f','--file','file_path', help='Write games to file_path')
 @click.argument('num_games', type=int)
-def run(num_simulations, num_samples, teams, players, debug_flag, write, file_path, num_games):
+def run(num_simulations, total_simulation_seconds, num_samples, teams, players, debug_flag, write, file_path, num_games):
     global debug
     global winners
     winners = []
@@ -144,7 +153,7 @@ def run(num_simulations, num_samples, teams, players, debug_flag, write, file_pa
 
     for i in range(num_games):
         print(f'\r... game {i}', end='', flush=True)
-        game, winner = play_game(players, num_simulations, num_samples)
+        game, winner = play_game(players, num_samples, num_simulations=num_simulations, total_simulation_seconds=total_simulation_seconds)
         game_results.append(winner)
         games.append(game)
 
