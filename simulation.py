@@ -160,6 +160,7 @@ def run(num_simulations, total_simulation_seconds, num_samples, teams, players, 
     config = {
             'players':players,
             'num_simulations':num_simulations,
+            'time_budget': total_simulation_seconds,
             'num_samples':num_samples,
             'num_games':num_games
     }
