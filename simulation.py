@@ -73,6 +73,41 @@ def log(message):
     if debug:
         print(message)
 
+def parse_player_string(player_string):
+    algo = None
+    total_simulations_seconds = None
+    num_samples = None
+    params = player_string.split('_')
+
+    def to_float(s):
+        try:
+            return float(s)
+        except TypeError:
+            return None
+
+    def to_int(s):
+        try:
+            return int(s)
+        except TypeError:
+            return None
+
+    if len(params) >= 2: #at least it may have algo and total_simulations_seconds
+        if len(params) == 3:
+            algo, total_simulations_seconds, num_samples = params
+        else:
+            algo, total_simulations_seconds = params
+
+        total_simulations_seconds = to_float(total_simulations_seconds)
+        num_samples = to_int(num_samples)
+
+        if total_simulations_seconds is None:
+            return (None, None, None)
+    
+    return (algo, total_simulations_seconds, num_samples)
+        
+
+
+
 def play_with_algo(algo, state, game, num_samples, num_simulations=None, total_simulation_seconds=1):
     if algo == 'mcts':
         return play_mcts(state, num_simulations=num_simulations, total_simulation_seconds=total_simulation_seconds)
@@ -83,6 +118,15 @@ def play_with_algo(algo, state, game, num_samples, num_simulations=None, total_s
     if algo == 'pimc':
         return play_pimc(state, game, num_samples, num_simulations=num_simulations, total_simulation_seconds=total_simulation_seconds)
 
+    algo, total_simulation_seconds, num_samples = parse_player_string(algo)
+
+    if algo is not None:
+        if algo == 'mcts':
+            return play_mcts(state, total_simulation_seconds=total_simulation_seconds)
+        else:
+            if algo == 'pimc':
+                return play_pimc(state, game, num_samples, total_simulation_seconds=total_simulation_seconds)
+
     if algo == 'mcts_w':
         return play_mcts(state, 20)
         
@@ -90,7 +134,7 @@ def play_with_algo(algo, state, game, num_samples, num_simulations=None, total_s
         return play_mcts(state, 60)
         
     if algo == 'mcts_s':
-        return play_mcts(state, 100)
+        return play_mcts(state, 100) #0.003 ?
         
     if algo == 'mcts_ss':
         return play_mcts(state, 250)
