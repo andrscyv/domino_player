@@ -36,14 +36,29 @@ def play_greedy(state):
 def rotate(l, n):
     return l[n:] + l[:n]
 
-def play_pimc(state, game, num_samples, num_simulations=None, total_simulation_seconds=1 ):
-
-
+def build_pimc_params(state, game):
     played_tiles = { frozenset(s.action.tile) for s in game[1:]}
     my_tiles = { frozenset(tile) for tile in state._tiles_by_player[state._current_player]}
     num_tiles_by_player = [len(tiles) for tiles in rotate(state._tiles_by_player,state._current_player)]
+
+    return (state._suits_at_ends, my_tiles, played_tiles, num_tiles_by_player)
+
+    
+def play_pimc_with_preprocessing(state, game, num_samples, num_simulations=None, total_simulation_seconds=1):
+    possible_actions = state.get_possible_actions()
+
+    if len(possible_actions) == 1:
+        return state.next_state_from_action(possible_actions[0])
+        
+    return play_pimc(state, game, num_samples, num_simulations, total_simulation_seconds)
+     
+
+
+def play_pimc(state, game, num_samples, num_simulations=None, total_simulation_seconds=1 ):
+    suits_at_ends, my_tiles, played_tiles, num_tiles_by_player = build_pimc_params(state, game)
+
     tile, suit_played = pimc_decision(
-        state._suits_at_ends,
+        suits_at_ends,
         my_tiles,
         played_tiles,
         num_tiles_by_player,
@@ -126,6 +141,10 @@ def play_with_algo(algo, state, game, num_samples, num_simulations=None, total_s
         else:
             if algo == 'pimc':
                 return play_pimc(state, game, num_samples, total_simulation_seconds=total_simulation_seconds)
+            else:
+                if algo == 'player':
+                    return play_pimc_with_preprocessing(state, game, num_samples, total_simulation_seconds=total_simulation_seconds)
+
 
     if algo == 'mcts_w':
         return play_mcts(state, 20)

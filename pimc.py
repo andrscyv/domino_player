@@ -61,7 +61,7 @@ def pimc_decision(suits_at_ends, my_tiles, played_tiles, num_tiles_by_player, sa
     counter = collections.Counter(decision_list)
     tile, suit = counter.most_common(1)[0][0]
     return (set(tile), suit)
-    
+
 if __name__ == "__main__":
     tiles_by_player = [
         [{0}, {1, 2}, {1, 5}, {6}, {5, 6}, {4, 6}], 
