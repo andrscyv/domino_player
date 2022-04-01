@@ -1,3 +1,4 @@
+cd ..
 mkdir ./experiments
 mkdir ./experiments_logs
 num_games=$1
