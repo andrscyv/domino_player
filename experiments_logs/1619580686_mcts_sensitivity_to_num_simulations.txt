@@ -1,0 +1,24 @@
+... game 0 
+{'players': ('mcts_0.0001', 'mcts_0.1', 'mcts_0.0001', 'mcts_0.1'), 'num_simulations': None, 'time_budget': 1.0, 'num_samples': 100, 'num_games': 1}
+Porcentaje ganado 0.0
+... game 0 
+{'players': ('mcts_0.0005', 'mcts_0.1', 'mcts_0.0005', 'mcts_0.1'), 'num_simulations': None, 'time_budget': 1.0, 'num_samples': 100, 'num_games': 1}
+Porcentaje ganado 0.0
+... game 0 
+{'players': ('mcts_0.001', 'mcts_0.1', 'mcts_0.001', 'mcts_0.1'), 'num_simulations': None, 'time_budget': 1.0, 'num_samples': 100, 'num_games': 1}
+Porcentaje ganado 0.0
+... game 0 
+{'players': ('mcts_0.005', 'mcts_0.1', 'mcts_0.005', 'mcts_0.1'), 'num_simulations': None, 'time_budget': 1.0, 'num_samples': 100, 'num_games': 1}
+Porcentaje ganado 0.0
+... game 0 
+{'players': ('mcts_0.01', 'mcts_0.1', 'mcts_0.01', 'mcts_0.1'), 'num_simulations': None, 'time_budget': 1.0, 'num_samples': 100, 'num_games': 1}
+Porcentaje ganado 0.0
+... game 0 
+{'players': ('mcts_0.05', 'mcts_0.1', 'mcts_0.05', 'mcts_0.1'), 'num_simulations': None, 'time_budget': 1.0, 'num_samples': 100, 'num_games': 1}
+Porcentaje ganado 1.0
+... game 0 
+{'players': ('mcts_0.1', 'mcts_0.1', 'mcts_0.1', 'mcts_0.1'), 'num_simulations': None, 'time_budget': 1.0, 'num_samples': 100, 'num_games': 1}
+Porcentaje ganado 1.0
+... game 0 
+{'players': ('mcts_0.5', 'mcts_0.1', 'mcts_0.5', 'mcts_0.1'), 'num_simulations': None, 'time_budget': 1.0, 'num_samples': 100, 'num_games': 1}
+Porcentaje ganado 1.0

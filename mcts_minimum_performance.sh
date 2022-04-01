@@ -2,7 +2,7 @@ mkdir ./experiments
 mkdir ./experiments_logs
 num_games=$1
 timestamp=$(date +"%s")
-log_file_name=${timestamp}_mcts_is_correct.txt
+log_file_name=${timestamp}_minimun_performance.txt
 time=0.01
 num_samples=100
 #Desempeño minimo

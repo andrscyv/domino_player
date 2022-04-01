@@ -1,0 +1,90 @@
+mkdir: cannot create directory ‘./experiments’: File exists
+mcts0.0001_greedy
+mcts0.0005_greedy
+mcts0.001_greedy
+mcts0.005_greedy
+mcts0.01_greedy
+mcts0.05_greedy
+mcts0.1_greedy
+mkdir: cannot create directory ‘./experiments’: File exists
+mcts0.0001_greedy
+mcts0.0005_greedy
+mcts0.001_greedy
+mcts0.005_greedy
+mcts0.01_greedy
+mcts0.05_greedy
+mcts0.1_greedy
+mkdir: cannot create directory ‘./experiments’: File exists
+mcts0.0001_greedy
+mcts0.0005_greedy
+mcts0.001_greedy
+mcts0.005_greedy
+mcts0.01_greedy
+mcts0.05_greedy
+mcts0.1_greedy
+mcts0.0001_greedy
+mcts0.0005_greedy
+mcts0.001_greedy
+mcts0.005_greedy
+mcts0.01_greedy
+mcts0.05_greedy
+mcts0.1_greedy
+mkdir: cannot create directory ‘./experiments’: File exists
+mcts0.0001_greedy
+mcts0.0005_greedy
+mcts0.001_greedy
+mcts0.005_greedy
+mcts0.01_greedy
+mcts0.05_greedy
+mcts0.1_greedy
+mkdir: cannot create directory ‘./experiments’: File exists
+mkdir: cannot create directory ‘./experiments_logs’: File exists
+mcts0.0001_mcts0.1
+mcts0.0005_mcts0.1
+mcts0.001_mcts0.1
+mcts0.005_mcts0.1
+mcts0.01_mcts0.1
+mcts0.05_mcts0.1
+mcts0.1_mcts0.1
+mcts0.5_mcts0.1
+mkdir: cannot create directory ‘./experiments’: File exists
+mkdir: cannot create directory ‘./experiments_logs’: File exists
+pimc0.01-100_greedy
+mkdir: cannot create directory ‘./experiments’: File exists
+mkdir: cannot create directory ‘./experiments_logs’: File exists
+mcts0.0001_greedy
+mcts0.0005_greedy
+mcts0.001_greedy
+mcts0.005_greedy
+mcts0.01_greedy
+mcts0.05_greedy
+mcts0.1_greedy
+mkdir: cannot create directory ‘./experiments’: File exists
+mkdir: cannot create directory ‘./experiments_logs’: File exists
+mcts0.0001_mcts0.1
+mcts0.0005_mcts0.1
+mcts0.001_mcts0.1
+mcts0.005_mcts0.1
+mcts0.01_mcts0.1
+mcts0.05_mcts0.1
+mcts0.1_mcts0.1
+mcts0.5_mcts0.1
+mkdir: cannot create directory ‘./experiments’: File exists
+mkdir: cannot create directory ‘./experiments_logs’: File exists
+pimc0.01-100_greedy
+[H[2J[3Jmkdir: cannot create directory './experiments': File exists
+mkdir: cannot create directory './experiments_logs': File exists
+mcts0.75_mcts0.1
+mcts1.5_mcts0.1
+mcts2_mcts0.1
+mkdir: cannot create directory './experiments': File exists
+mkdir: cannot create directory './experiments_logs': File exists
+mcts0.75_mcts0.1
+mcts1.5_mcts0.1
+mcts2_mcts0.1
+mkdir: cannot create directory './experiments': File exists
+mkdir: cannot create directory './experiments_logs': File exists
+mcts2.5_mcts0.1
+mcts3.5_mcts0.1
+mcts4.5_mcts0.1
+mcts5.5_mcts0.1
