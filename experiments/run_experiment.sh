@@ -1,3 +1,5 @@
+#!/bin/bash
+
 mkdir -p ./pickles
 mkdir -p ./logs
 PICKLES_FOLDER_PATH=$(pwd)/pickles
