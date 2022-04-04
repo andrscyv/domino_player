@@ -1,5 +1,3 @@
-from domino_easyai import GameOfDomino
-from easyAI import Human_Player, AI_Player, Negamax
 from mctspy.tree.nodes import TwoPlayersGameMonteCarloTreeSearchNode
 from mctspy.tree.search import MonteCarloTreeSearch
 from domino_mctspy import DominoGameState
@@ -10,17 +8,27 @@ from pimc import pimc_decision
 from stats import save_games_played
 import click
 
+
 def play_mcts(state, num_simulations=None, total_simulation_seconds=1):
     current_player = state._current_player
     tiles_by_player = state._tiles_by_player
-    aux_state = DominoState(0, {
-        'tiles_by_player': rotate(tiles_by_player, current_player),
-        'suits_at_ends': state._suits_at_ends
-    })
-    root = TwoPlayersGameMonteCarloTreeSearchNode(state = DominoGameState(aux_state))
+    aux_state = DominoState(
+        0,
+        {
+            "tiles_by_player": rotate(tiles_by_player, current_player),
+            "suits_at_ends": state._suits_at_ends,
+        },
+    )
+    root = TwoPlayersGameMonteCarloTreeSearchNode(state=DominoGameState(aux_state))
     mcts = MonteCarloTreeSearch(root)
-    best_action = mcts.best_action(simulations_number=num_simulations, total_simulation_seconds=total_simulation_seconds).state._state.action
-    return state.next_state_from_action(DominoAction(current_player, best_action.tile, best_action.suit_played))
+    best_action = mcts.best_action(
+        simulations_number=num_simulations,
+        total_simulation_seconds=total_simulation_seconds,
+    ).state._state.action
+    return state.next_state_from_action(
+        DominoAction(current_player, best_action.tile, best_action.suit_played)
+    )
+
 
 def play_greedy(state):
     actions = state.get_possible_actions()
@@ -28,71 +36,82 @@ def play_greedy(state):
     if len(actions) == 1:
         return state.next_state_from_action(actions[0])
 
-    pips_of_actions = [ sum(action.tile) for action in actions ]
-    index_of_greedy_action  = pips_of_actions.index(max(pips_of_actions))
-    
-    return state.next_state_from_action(actions[index_of_greedy_action]) 
+    pips_of_actions = [sum(action.tile) for action in actions]
+    index_of_greedy_action = pips_of_actions.index(max(pips_of_actions))
+
+    return state.next_state_from_action(actions[index_of_greedy_action])
+
 
 def rotate(l, n):
     return l[n:] + l[:n]
 
+
 def build_pimc_params(state, game):
-    played_tiles = { frozenset(s.action.tile) for s in game[1:]}
-    my_tiles = { frozenset(tile) for tile in state._tiles_by_player[state._current_player]}
-    num_tiles_by_player = [len(tiles) for tiles in rotate(state._tiles_by_player,state._current_player)]
+    played_tiles = {frozenset(s.action.tile) for s in game[1:]}
+    my_tiles = {
+        frozenset(tile) for tile in state._tiles_by_player[state._current_player]
+    }
+    num_tiles_by_player = [
+        len(tiles) for tiles in rotate(state._tiles_by_player, state._current_player)
+    ]
 
     return (state._suits_at_ends, my_tiles, played_tiles, num_tiles_by_player)
 
-    
-def play_pimc_with_preprocessing(state, game, num_samples, num_simulations=None, total_simulation_seconds=1):
+
+def play_pimc_with_preprocessing(
+    state, game, num_samples, num_simulations=None, total_simulation_seconds=1
+):
     possible_actions = state.get_possible_actions()
 
     if len(possible_actions) == 1:
         return state.next_state_from_action(possible_actions[0])
-        
-    return play_pimc(state, game, num_samples, num_simulations, total_simulation_seconds)
-     
+
+    return play_pimc(
+        state, game, num_samples, num_simulations, total_simulation_seconds
+    )
 
 
-def play_pimc(state, game, num_samples, num_simulations=None, total_simulation_seconds=1 ):
-    suits_at_ends, my_tiles, played_tiles, num_tiles_by_player = build_pimc_params(state, game)
+def play_pimc(
+    state, game, num_samples, num_simulations=None, total_simulation_seconds=1
+):
+    suits_at_ends, my_tiles, played_tiles, num_tiles_by_player = build_pimc_params(
+        state, game
+    )
 
     tile, suit_played = pimc_decision(
         suits_at_ends,
         my_tiles,
         played_tiles,
         num_tiles_by_player,
-        num_samples, 
+        num_samples,
         mcts_simulations=num_simulations,
-        total_simulation_seconds=total_simulation_seconds
+        total_simulation_seconds=total_simulation_seconds,
     )
 
-    return state.next_state_from_action(DominoAction(state._current_player, tile, suit_played))
+    return state.next_state_from_action(
+        DominoAction(state._current_player, tile, suit_played)
+    )
 
-def play_perfect(state):
-    ai = Negamax(28)
-    easy_ai = GameOfDomino([AI_Player(ai), Human_Player()])
-    easy_ai._state = state
-    move = easy_ai.get_move()
-    easy_ai.play_move(move)
-
-    return easy_ai._state
 
 def print_state(state):
     if not state.action:
         return
 
-    log(f"\nPlayer: {state.action.player} {state.action.tile} suits: {state._suits_at_ends}")
+    log(
+        f"\nPlayer: {state.action.player} {state.action.tile} suits: {state._suits_at_ends}"
+    )
+
 
 def log(message):
     if debug:
         print(message)
 
+
 def parse_player_string(player_string):
     algo = None
     total_simulations_seconds = None
     num_samples = None
-    params = player_string.split('_')
+    params = player_string.split("_")
 
     def to_float(s):
         try:
@@ -106,7 +125,7 @@ def parse_player_string(player_string):
         except TypeError:
             return None
 
-    if len(params) >= 2: #at least it may have algo and total_simulations_seconds
+    if len(params) >= 2:  # at least it may have algo and total_simulations_seconds
         if len(params) == 3:
             algo, total_simulations_seconds, num_samples = params
         else:
@@ -117,58 +136,78 @@ def parse_player_string(player_string):
 
         if total_simulations_seconds is None:
             return (None, None, None)
-    
+
     return (algo, total_simulations_seconds, num_samples)
-        
 
 
+def play_with_algo(
+    algo, state, game, num_samples, num_simulations=None, total_simulation_seconds=1
+):
+    if algo == "mcts":
+        return play_mcts(
+            state,
+            num_simulations=num_simulations,
+            total_simulation_seconds=total_simulation_seconds,
+        )
 
-def play_with_algo(algo, state, game, num_samples, num_simulations=None, total_simulation_seconds=1):
-    if algo == 'mcts':
-        return play_mcts(state, num_simulations=num_simulations, total_simulation_seconds=total_simulation_seconds)
-
-    if algo == 'greedy':
+    if algo == "greedy":
         return play_greedy(state)
 
-    if algo == 'pimc':
-        return play_pimc(state, game, num_samples, num_simulations=num_simulations, total_simulation_seconds=total_simulation_seconds)
+    if algo == "pimc":
+        return play_pimc(
+            state,
+            game,
+            num_samples,
+            num_simulations=num_simulations,
+            total_simulation_seconds=total_simulation_seconds,
+        )
 
     algo, total_simulation_seconds, num_samples = parse_player_string(algo)
 
     if algo is not None:
-        if algo == 'mcts':
+        if algo == "mcts":
             return play_mcts(state, total_simulation_seconds=total_simulation_seconds)
         else:
-            if algo == 'pimc':
-                return play_pimc(state, game, num_samples, total_simulation_seconds=total_simulation_seconds)
+            if algo == "pimc":
+                return play_pimc(
+                    state,
+                    game,
+                    num_samples,
+                    total_simulation_seconds=total_simulation_seconds,
+                )
             else:
-                if algo == 'player':
-                    return play_pimc_with_preprocessing(state, game, num_samples, total_simulation_seconds=total_simulation_seconds)
+                if algo == "player":
+                    return play_pimc_with_preprocessing(
+                        state,
+                        game,
+                        num_samples,
+                        total_simulation_seconds=total_simulation_seconds,
+                    )
 
-
-    if algo == 'mcts_w':
+    if algo == "mcts_w":
         return play_mcts(state, 20)
-        
-    if algo == 'mcts_m':
-        return play_mcts(state, 60)
-        
-    if algo == 'mcts_s':
-        return play_mcts(state, 100) #0.003 ?
-        
-    if algo == 'mcts_ss':
-        return play_mcts(state, 250)
-        
 
-def play_game(players, num_samples=100, num_simulations=None, total_simulation_seconds=1):
+    if algo == "mcts_m":
+        return play_mcts(state, 60)
+
+    if algo == "mcts_s":
+        return play_mcts(state, 100)  # 0.003 ?
+
+    if algo == "mcts_ss":
+        return play_mcts(state, 250)
+
+
+def play_game(
+    players, num_samples=100, num_simulations=None, total_simulation_seconds=1
+):
     tiles_by_player = deal_tiles()
-    first_player = random.choice([0,1,2,3])
-    state = DominoState(first_player, {
-        'tiles_by_player': tiles_by_player,
-        'suits_at_ends': set()
-    })
+    first_player = random.choice([0, 1, 2, 3])
+    state = DominoState(
+        first_player, {"tiles_by_player": tiles_by_player, "suits_at_ends": set()}
+    )
     game = [state]
-    log(f"Starts player {first_player}" )
-    log("Tiles : " )
+    log(f"Starts player {first_player}")
+    log("Tiles : ")
     log(pformat(state._tiles_by_player))
     while not state.is_terminal():
         log("=======================================")
@@ -179,7 +218,7 @@ def play_game(players, num_samples=100, num_simulations=None, total_simulation_s
             game,
             num_samples,
             num_simulations=num_simulations,
-            total_simulation_seconds=total_simulation_seconds
+            total_simulation_seconds=total_simulation_seconds,
         )
         game.append(state)
         print_state(state)
@@ -189,47 +228,89 @@ def play_game(players, num_samples=100, num_simulations=None, total_simulation_s
 
     return (game, state.calc_reward())
 
+
 def record_winner(tiles_by_player):
     winners.append(tiles_by_player)
 
 
 @click.command()
-@click.option('-s','--simulations','num_simulations', default=None, help='number of simulations for MCTS', type=int)
-@click.option('-b','--time-budget','total_simulation_seconds', default=1, help='Time budget for simulations in seconds', type=float)
-@click.option('-m','--samples','num_samples', default=100, help='number of samples for PIMC')
-@click.option('-t','--teams', nargs=2, default=('pimc', 'greedy') , help='Define algorithms by teams')
-@click.option('-p','--players', nargs=4 , help='Define algorithms by players')
-@click.option('-d','--debug','debug_flag', is_flag=True , help='Enables debug output')
-@click.option('-w','--write', is_flag=True, help='Write games to file in ./simulations')
-@click.option('-f','--file','file_path', help='Write games to file_path')
-@click.argument('num_games', type=int)
-def run(num_simulations, total_simulation_seconds, num_samples, teams, players, debug_flag, write, file_path, num_games):
+@click.option(
+    "-s",
+    "--simulations",
+    "num_simulations",
+    default=None,
+    help="number of simulations for MCTS",
+    type=int,
+)
+@click.option(
+    "-b",
+    "--time-budget",
+    "total_simulation_seconds",
+    default=1,
+    help="Time budget for simulations in seconds",
+    type=float,
+)
+@click.option(
+    "-m", "--samples", "num_samples", default=100, help="number of samples for PIMC"
+)
+@click.option(
+    "-t",
+    "--teams",
+    nargs=2,
+    default=("pimc", "greedy"),
+    help="Define algorithms by teams",
+)
+@click.option("-p", "--players", nargs=4, help="Define algorithms by players")
+@click.option("-d", "--debug", "debug_flag", is_flag=True, help="Enables debug output")
+@click.option(
+    "-w", "--write", is_flag=True, help="Write games to file in ./simulations"
+)
+@click.option("-f", "--file", "file_path", help="Write games to file_path")
+@click.argument("num_games", type=int)
+def run(
+    num_simulations,
+    total_simulation_seconds,
+    num_samples,
+    teams,
+    players,
+    debug_flag,
+    write,
+    file_path,
+    num_games,
+):
     global debug
     global winners
     winners = []
     # random.seed(30)
-    debug = debug_flag 
+    debug = debug_flag
     game_results = []
     games = []
     if not players:
         players = create_players(teams)
 
     for i in range(num_games):
-        print(f'\r... game {i}', end='', flush=True)
-        game, winner = play_game(players, num_samples, num_simulations=num_simulations, total_simulation_seconds=total_simulation_seconds)
+        print(f"\r... game {i}", end="", flush=True)
+        game, winner = play_game(
+            players,
+            num_samples,
+            num_simulations=num_simulations,
+            total_simulation_seconds=total_simulation_seconds,
+        )
         game_results.append(winner)
         games.append(game)
 
     config = {
-            'players':players,
-            'num_simulations':num_simulations,
-            'time_budget': total_simulation_seconds,
-            'num_samples':num_samples,
-            'num_games':num_games
+        "players": players,
+        "num_simulations": num_simulations,
+        "time_budget": total_simulation_seconds,
+        "num_samples": num_samples,
+        "num_games": num_games,
     }
-    print(' ')
+    print(" ")
     print(config)
-    print(f"Porcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}")
+    print(
+        f"Porcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}"
+    )
     if write or file_path:
         save_games_played(config, games, file_path)
 
@@ -237,11 +318,6 @@ def run(num_simulations, total_simulation_seconds, num_samples, teams, players, 
 def create_players(teams):
     return (teams[0], teams[1], teams[0], teams[1])
 
+
 if __name__ == "__main__":
     run()
-
-
-
-
-
-    
