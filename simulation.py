@@ -6,6 +6,7 @@ import random
 from pprint import pformat
 from pimc import pimc_decision
 from stats import save_games_played
+from simulation_utils import *
 import click
 
 
@@ -40,10 +41,6 @@ def play_greedy(state):
     index_of_greedy_action = pips_of_actions.index(max(pips_of_actions))
 
     return state.next_state_from_action(actions[index_of_greedy_action])
-
-
-def rotate(l, n):
-    return l[n:] + l[:n]
 
 
 def build_pimc_params(state, game):
@@ -107,46 +104,17 @@ def log(message):
         print(message)
 
 
-def parse_player_string(player_string):
-    algo = None
-    total_simulations_seconds = None
-    num_samples = None
-    params = player_string.split("_")
-
-    def to_float(s):
-        try:
-            return float(s)
-        except TypeError:
-            return None
-
-    def to_int(s):
-        try:
-            return int(s)
-        except TypeError:
-            return None
-
-    if len(params) >= 2:  # at least it may have algo and total_simulations_seconds
-        if len(params) == 3:
-            algo, total_simulations_seconds, num_samples = params
-        else:
-            algo, total_simulations_seconds = params
-
-        total_simulations_seconds = to_float(total_simulations_seconds)
-        num_samples = to_int(num_samples)
-
-        if total_simulations_seconds is None:
-            return (None, None, None)
-
-    return (algo, total_simulations_seconds, num_samples)
-
-
-def play_with_algo(
-    algo, state, game, num_samples, num_simulations=None, total_simulation_seconds=1
+def play_turn(
+    state,
+    game,
+    algo,
+    total_simulation_seconds,
+    num_samples,
 ):
     if algo == "mcts":
         return play_mcts(
             state,
-            num_simulations=num_simulations,
+            num_simulations=None,
             total_simulation_seconds=total_simulation_seconds,
         )
 
@@ -158,75 +126,39 @@ def play_with_algo(
             state,
             game,
             num_samples,
-            num_simulations=num_simulations,
+            num_simulations=None,
             total_simulation_seconds=total_simulation_seconds,
         )
 
-    algo, total_simulation_seconds, num_samples = parse_player_string(algo)
 
-    if algo is not None:
-        if algo == "mcts":
-            return play_mcts(state, total_simulation_seconds=total_simulation_seconds)
-        else:
-            if algo == "pimc":
-                return play_pimc(
-                    state,
-                    game,
-                    num_samples,
-                    total_simulation_seconds=total_simulation_seconds,
-                )
-            else:
-                if algo == "player":
-                    return play_pimc_with_preprocessing(
-                        state,
-                        game,
-                        num_samples,
-                        total_simulation_seconds=total_simulation_seconds,
-                    )
-
-    if algo == "mcts_w":
-        return play_mcts(state, 20)
-
-    if algo == "mcts_m":
-        return play_mcts(state, 60)
-
-    if algo == "mcts_s":
-        return play_mcts(state, 100)  # 0.003 ?
-
-    if algo == "mcts_ss":
-        return play_mcts(state, 250)
-
-
-def play_game(
-    players, num_samples=100, num_simulations=None, total_simulation_seconds=1
-):
+def play_game(players):
     tiles_by_player = deal_tiles()
     first_player = random.choice([0, 1, 2, 3])
     state = DominoState(
         first_player, {"tiles_by_player": tiles_by_player, "suits_at_ends": set()}
     )
     game = [state]
+    turn_record_list = [TurnRecord(None, None, None, state)]
     log(f"Starts player {first_player}")
     log("Tiles : ")
     log(pformat(state._tiles_by_player))
     while not state.is_terminal():
         log("=======================================")
         log(pformat(state._tiles_by_player[state._current_player]))
-        state = play_with_algo(
-            players[state._current_player],
-            state,
-            game,
-            num_samples,
-            num_simulations=num_simulations,
-            total_simulation_seconds=total_simulation_seconds,
+        algo, total_simulation_seconds, num_samples = parse_player_string(
+            players[state._current_player]
         )
+        state = play_turn(state, game, algo, total_simulation_seconds, num_samples)
         game.append(state)
+        turn_record_list.append(
+            TurnRecord(algo, total_simulation_seconds, num_samples, state)
+        )
         print_state(state)
     log(f"winneeeer {state.calc_reward()}")
     log(pformat(state._tiles_by_player))
     record_winner(state._tiles_by_player)
 
-    return (game, state.calc_reward())
+    return (game, state.calc_reward(), turn_record_list)
 
 
 def record_winner(tiles_by_player):
@@ -234,25 +166,6 @@ def record_winner(tiles_by_player):
 
 
 @click.command()
-@click.option(
-    "-s",
-    "--simulations",
-    "num_simulations",
-    default=None,
-    help="number of simulations for MCTS",
-    type=int,
-)
-@click.option(
-    "-b",
-    "--time-budget",
-    "total_simulation_seconds",
-    default=1,
-    help="Time budget for simulations in seconds",
-    type=float,
-)
-@click.option(
-    "-m", "--samples", "num_samples", default=100, help="number of samples for PIMC"
-)
 @click.option(
     "-t",
     "--teams",
@@ -262,20 +175,11 @@ def record_winner(tiles_by_player):
 )
 @click.option("-p", "--players", nargs=4, help="Define algorithms by players")
 @click.option("-d", "--debug", "debug_flag", is_flag=True, help="Enables debug output")
-@click.option(
-    "-w", "--write", is_flag=True, help="Write games to file in ./simulations"
-)
-@click.option("-f", "--file", "file_path", help="Write games to file_path")
 @click.argument("num_games", type=int)
 def run(
-    num_simulations,
-    total_simulation_seconds,
-    num_samples,
     teams,
     players,
     debug_flag,
-    write,
-    file_path,
     num_games,
 ):
     global debug
@@ -284,35 +188,19 @@ def run(
     # random.seed(30)
     debug = debug_flag
     game_results = []
-    games = []
+    game_record_list = []
     if not players:
         players = create_players(teams)
 
     for i in range(num_games):
         print(f"\r... game {i}", end="", flush=True)
-        game, winner = play_game(
-            players,
-            num_samples,
-            num_simulations=num_simulations,
-            total_simulation_seconds=total_simulation_seconds,
-        )
+        _, winner, turn_record_list = play_game(players)
         game_results.append(winner)
-        games.append(game)
+        game_record_list.append(turn_record_list)
 
-    config = {
-        "players": players,
-        "num_simulations": num_simulations,
-        "time_budget": total_simulation_seconds,
-        "num_samples": num_samples,
-        "num_games": num_games,
-    }
-    print(" ")
-    print(config)
     print(
         f"Porcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}"
     )
-    if write or file_path:
-        save_games_played(config, games, file_path)
 
 
 def create_players(teams):

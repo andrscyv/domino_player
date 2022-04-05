@@ -1,3 +1,8 @@
+from collections import namedtuple
+
+TurnRecord = namedtuple("GameRecord", ["algo", "time_budget", "num_samples", "state"])
+
+
 def parse_player_string(player_string):
     algo = None
     total_simulation_seconds = None
@@ -24,3 +29,7 @@ def parse_player_string(player_string):
     num_samples = int(num_samples) if num_samples else None
 
     return algo, total_simulation_seconds, num_samples
+
+
+def rotate(l, n):
+    return l[n:] + l[:n]
