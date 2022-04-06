@@ -5,7 +5,7 @@ from domino_state import deal_tiles, DominoState, DominoAction
 import random
 from pprint import pformat
 from pimc import pimc_decision
-from stats import save_games_played
+from recorder import Recorder
 from simulation_utils import *
 import click
 
@@ -122,7 +122,7 @@ def play_turn(
         return play_greedy(state)
 
     if algo == "pimc":
-        return play_pimc(
+        return play_pimc_with_preprocessing(
             state,
             game,
             num_samples,
@@ -131,34 +131,39 @@ def play_turn(
         )
 
 
-def play_game(players):
+def play_game(players, recorder: Recorder):
     tiles_by_player = deal_tiles()
     first_player = random.choice([0, 1, 2, 3])
     state = DominoState(
         first_player, {"tiles_by_player": tiles_by_player, "suits_at_ends": set()}
     )
     game = [state]
-    turn_record_list = [TurnRecord(None, None, None, state)]
+    play_record_list = [PlayRecord(None, None, None, state, None)]
     log(f"Starts player {first_player}")
     log("Tiles : ")
     log(pformat(state._tiles_by_player))
+    simulation_id = recorder.create_new_simulation_record(
+        players, first_player, tiles_by_player
+    )
     while not state.is_terminal():
         log("=======================================")
         log(pformat(state._tiles_by_player[state._current_player]))
-        algo, total_simulation_seconds, num_samples = parse_player_string(
-            players[state._current_player]
-        )
+        player_string = players[state._current_player]
+        algo, total_simulation_seconds, num_samples = parse_player_string(player_string)
         state = play_turn(state, game, algo, total_simulation_seconds, num_samples)
         game.append(state)
-        turn_record_list.append(
-            TurnRecord(algo, total_simulation_seconds, num_samples, state)
+        play_record_list.append(
+            PlayRecord(
+                algo, total_simulation_seconds, num_samples, state, player_string
+            )
         )
         print_state(state)
     log(f"winneeeer {state.calc_reward()}")
     log(pformat(state._tiles_by_player))
     record_winner(state._tiles_by_player)
+    recorder.save_record_list(simulation_id, play_record_list)
 
-    return (game, state.calc_reward(), turn_record_list)
+    return (game, state.calc_reward(), play_record_list)
 
 
 def record_winner(tiles_by_player):
@@ -192,15 +197,17 @@ def run(
     if not players:
         players = create_players(teams)
 
+    recorder = Recorder("domino.db")
     for i in range(num_games):
         print(f"\r... game {i}", end="", flush=True)
-        _, winner, turn_record_list = play_game(players)
+        _, winner, play_record_list = play_game(players, recorder)
         game_results.append(winner)
-        game_record_list.append(turn_record_list)
+        game_record_list.append(play_record_list)
 
     print(
         f"Porcentaje ganado {sum([result for result in game_results if result == 1])/len(game_results)}"
     )
+    recorder.close()
 
 
 def create_players(teams):

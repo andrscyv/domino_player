@@ -1,6 +1,8 @@
 from collections import namedtuple
 
-TurnRecord = namedtuple("GameRecord", ["algo", "time_budget", "num_samples", "state"])
+PlayRecord = namedtuple(
+    "GameRecord", ["algo", "time_budget", "num_samples", "state", "player_string"]
+)
 
 
 def parse_player_string(player_string):
