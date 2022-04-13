@@ -142,7 +142,7 @@ def play_game(players, recorder: Recorder):
     log(f"Starts player {first_player}")
     log("Tiles : ")
     log(pformat(state._tiles_by_player))
-    simulation_id = recorder.create_new_simulation_record(
+    simulation_id = recorder.create_new_game_record(
         players, first_player, tiles_by_player
     )
     while not state.is_terminal():
@@ -197,7 +197,7 @@ def run(
     if not players:
         players = create_players(teams)
 
-    recorder = Recorder("domino.db")
+    recorder = Recorder("domino.db", num_games=num_games)
     for i in range(num_games):
         print(f"\r... game {i}", end="", flush=True)
         _, winner, play_record_list = play_game(players, recorder)

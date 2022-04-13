@@ -45,13 +45,22 @@ def extract_suits(suits_at_end: Set[int]):
 
 
 class Recorder:
-    def __init__(self, conn_name):
+    def __init__(self, conn_name, num_games):
         self.conn = sqlite3.connect(conn_name)
         c = self.conn.cursor()
         c.execute(
             (
-                "CREATE TABLE IF NOT EXISTS simulation("
-                "simulation_id INTEGER PRIMARY KEY,"
+                "CREATE TABLE IF NOT EXISTS experiment("
+                "experiment_id INTEGER PRIMARY KEY,"
+                "num_games INTEGER"
+                ") "
+            )
+        )
+        c.execute(
+            (
+                "CREATE TABLE IF NOT EXISTS game("
+                "game_id INTEGER PRIMARY KEY,"
+                "experiment_id INTEGER,"
                 "creation_date TEXT,"
                 "p1 TEXT,"
                 "p2 TEXT,"
@@ -61,14 +70,15 @@ class Recorder:
                 "p1_tiles TEXT,"
                 "p2_tiles TEXT,"
                 "p3_tiles TEXT,"
-                "p4_tiles TEXT"
+                "p4_tiles TEXT,"
+                "FOREIGN KEY(experiment_id) REFERENCES experiment(experiment_id)"
                 ") "
             )
         )
         c.execute(
             (
                 "CREATE TABLE IF NOT EXISTS play("
-                "simulation_id INTEGER NOT NULL,"
+                "game_id INTEGER NOT NULL,"
                 "player TEXT,"
                 "pip1 INTEGER,"
                 "pip2 INTEGER,"
@@ -80,17 +90,29 @@ class Recorder:
                 "p4_tiles TEXT,"
                 "play_number INTEGER,"
                 "suit_played INTEGER,"
-                "FOREIGN KEY (simulation_id) REFERENCES simulation(simulation_id)"
+                "FOREIGN KEY (game_id) REFERENCES game(game_id)"
                 ") "
             )
         )
         self.conn.commit()
+        self.experiment_id = self.create_new_experiment_record(num_games)
 
-    def create_new_simulation_record(self, players, first_player, tiles) -> int:
+    def create_new_experiment_record(self, num_games) -> int:
+        c = self.conn.cursor()
+        c.execute(
+            ("INSERT INTO experiment(num_games) VALUES(?)"),
+            (num_games,),
+        )
+        experiment_id = c.lastrowid
+        self.conn.commit()
+        return experiment_id
+
+    def create_new_game_record(self, players, first_player, tiles) -> int:
         c = self.conn.cursor()
         c.execute(
             (
-                "INSERT INTO simulation ("
+                "INSERT INTO game ("
+                "experiment_id,"
                 "creation_date,"
                 "p1,"
                 "p2,"
@@ -102,9 +124,10 @@ class Recorder:
                 "p3_tiles,"
                 "p4_tiles"
                 ")"
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             ),
             (
+                self.experiment_id,
                 str(datetime.datetime.now()),
                 players[0],
                 players[1],
@@ -117,11 +140,11 @@ class Recorder:
                 json.dumps(tiles[3], cls=SetEncoder),
             ),
         )
-        simulation_id = c.lastrowid
+        game_id = c.lastrowid
         self.conn.commit()
-        return simulation_id
+        return game_id
 
-    def save_record_list(self, simulation_id: int, play_record_list: list[PlayRecord]):
+    def save_record_list(self, game_id: int, play_record_list: list[PlayRecord]):
         c = self.conn.cursor()
 
         for idx, play_record in enumerate(play_record_list):
@@ -139,7 +162,7 @@ class Recorder:
             c.execute(
                 (
                     "INSERT INTO play ("
-                    "simulation_id,"
+                    "game_id,"
                     "player,"
                     "pip1,"
                     "pip2,"
@@ -155,7 +178,7 @@ class Recorder:
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 ),
                 (
-                    simulation_id,
+                    game_id,
                     play_record.player_string,
                     pip1,
                     pip2,
