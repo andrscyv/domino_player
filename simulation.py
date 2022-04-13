@@ -142,9 +142,7 @@ def play_game(players, recorder: Recorder):
     log(f"Starts player {first_player}")
     log("Tiles : ")
     log(pformat(state._tiles_by_player))
-    simulation_id = recorder.create_new_game_record(
-        players, first_player, tiles_by_player
-    )
+    game_id = recorder.create_new_game_record(players, first_player, tiles_by_player)
     while not state.is_terminal():
         log("=======================================")
         log(pformat(state._tiles_by_player[state._current_player]))
@@ -167,9 +165,11 @@ def play_game(players, recorder: Recorder):
     log(f"winneeeer {state.calc_reward()}")
     log(pformat(state._tiles_by_player))
     record_winner(state._tiles_by_player)
-    recorder.save_record_list(simulation_id, play_record_list)
+    recorder.save_record_list(game_id, play_record_list)
+    winner = state.calc_reward()
+    recorder.save_winner(game_id, winner)
 
-    return (game, state.calc_reward(), play_record_list)
+    return (game, winner, play_record_list)
 
 
 def record_winner(tiles_by_player):

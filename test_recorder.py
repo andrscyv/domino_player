@@ -31,3 +31,4 @@ class TestRecorder(unittest.TestCase):
             PlayRecord("pimc", 1.1, 100, second_state, "pimc_1.1_100", first_player),
         ]
         self.recorder.save_record_list(game_id, record_list)
+        self.recorder.save_winner(game_id, 0)

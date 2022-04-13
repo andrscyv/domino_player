@@ -71,6 +71,7 @@ class Recorder:
                 "p2_tiles TEXT,"
                 "p3_tiles TEXT,"
                 "p4_tiles TEXT,"
+                "winner INTEGER,"
                 "FOREIGN KEY(experiment_id) REFERENCES experiment(experiment_id)"
                 ") "
             )
@@ -144,6 +145,14 @@ class Recorder:
         game_id = c.lastrowid
         self.conn.commit()
         return game_id
+
+    def save_winner(self, game_id, winner):
+        c = self.conn.cursor()
+        c.execute(
+            ("UPDATE game SET winner = ? WHERE game_id = ?"),
+            (winner, game_id),
+        )
+        self.conn.commit()
 
     def save_record_list(self, game_id: int, play_record_list: list[PlayRecord]):
         c = self.conn.cursor()
