@@ -80,6 +80,7 @@ class Recorder:
                 "CREATE TABLE IF NOT EXISTS play("
                 "game_id INTEGER NOT NULL,"
                 "player TEXT,"
+                "player_number INTEGER,"
                 "pip1 INTEGER,"
                 "pip2 INTEGER,"
                 "suit_at_end_l INTEGER,"
@@ -164,6 +165,7 @@ class Recorder:
                     "INSERT INTO play ("
                     "game_id,"
                     "player,"
+                    "player_number,"
                     "pip1,"
                     "pip2,"
                     "suit_at_end_l,"
@@ -175,11 +177,12 @@ class Recorder:
                     "p4_tiles,"
                     "play_number"
                     ")"
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 ),
                 (
                     game_id,
                     play_record.player_string,
+                    play_record.player_number + 1,
                     pip1,
                     pip2,
                     suit_l,
