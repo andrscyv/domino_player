@@ -138,7 +138,7 @@ def play_game(players, recorder: Recorder):
         first_player, {"tiles_by_player": tiles_by_player, "suits_at_ends": set()}
     )
     game = [state]
-    play_record_list = [PlayRecord(None, None, None, state, None, -1)]
+    play_record_list = []
     log(f"Starts player {first_player}")
     log("Tiles : ")
     log(pformat(state._tiles_by_player))

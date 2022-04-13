@@ -9,7 +9,11 @@ from simulation_utils import PlayRecord
 class SetEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, set):
-            return list(obj)
+            l = list(obj)
+            if len(l) == 1:
+                l.append(l[0])
+            l.sort()
+            return "".join([str(p) for p in l])
         return json.JSONEncoder.default(self, obj)
 
 
