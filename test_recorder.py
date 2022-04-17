@@ -7,7 +7,7 @@ from simulation_utils import PlayRecord
 
 class TestRecorder(unittest.TestCase):
     def setUp(self):
-        self.recorder = Recorder("domino_test.db", 100)
+        self.recorder = Recorder("domino_test.db", 100, ["p1", "p2", "p3", "p4"])
 
     def test_record_creation(self):
         self.assertTrue(self.recorder.conn is not None)

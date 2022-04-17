@@ -49,14 +49,18 @@ def extract_suits(suits_at_end: Set[int]):
 
 
 class Recorder:
-    def __init__(self, conn_name, num_games):
+    def __init__(self, conn_name, num_games, players):
         self.conn = sqlite3.connect(conn_name)
         c = self.conn.cursor()
         c.execute(
             (
                 "CREATE TABLE IF NOT EXISTS experiment("
                 "experiment_id INTEGER PRIMARY KEY,"
-                "num_games INTEGER"
+                "num_games INTEGER,"
+                "p1 TEXT,"
+                "p2 TEXT,"
+                "p3 TEXT,"
+                "p4 TEXT"
                 ") "
             )
         )
@@ -101,13 +105,13 @@ class Recorder:
             )
         )
         self.conn.commit()
-        self.experiment_id = self.create_new_experiment_record(num_games)
+        self.experiment_id = self.create_new_experiment_record(num_games, players)
 
-    def create_new_experiment_record(self, num_games) -> int:
+    def create_new_experiment_record(self, num_games, players) -> int:
         c = self.conn.cursor()
         c.execute(
-            ("INSERT INTO experiment(num_games) VALUES(?)"),
-            (num_games,),
+            ("INSERT INTO experiment(num_games, p1, p2 ,p3, p4) VALUES(?, ?, ?, ?, ?)"),
+            (num_games, players[0], players[1], players[2], players[3]),
         )
         experiment_id = c.lastrowid
         self.conn.commit()

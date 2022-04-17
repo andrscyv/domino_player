@@ -203,7 +203,7 @@ def run(
     if not players:
         players = create_players(teams)
 
-    recorder = Recorder("domino.db", num_games=num_games)
+    recorder = Recorder("domino.db", num_games, players)
     for i in range(num_games):
         print(f"\r... game {i}", end="", flush=True)
         _, winner, play_record_list = play_game(players, recorder)
