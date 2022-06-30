@@ -3,7 +3,7 @@ cycler==0.10.0
 easyAI==1.0.0.4
 kiwisolver==1.3.1
 matplotlib==3.3.3
-git+https://github.com/andrscyv/monte-carlo-tree-search.git@feature/total-simulation-seconds
+git+https://github.com/andrscyv/monte-carlo-tree-search.git@fix/empty-result-action-list
 numpy==1.19.4
 Pillow==8.0.1
 pyparsing==2.4.7
