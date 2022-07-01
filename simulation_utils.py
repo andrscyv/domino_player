@@ -2,7 +2,15 @@ from collections import namedtuple
 
 PlayRecord = namedtuple(
     "GameRecord",
-    ["algo", "time_budget", "num_samples", "state", "player_string", "player_number"],
+    [
+        "algo",
+        "time_budget",
+        "num_samples",
+        "state",
+        "player_string",
+        "player_number",
+        "seconds_elapsed",
+    ],
 )
 
 

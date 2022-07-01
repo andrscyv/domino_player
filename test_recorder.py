@@ -27,8 +27,8 @@ class TestRecorder(unittest.TestCase):
             DominoAction(0, tiles_by_player[0][0], None)
         )
         record_list = [
-            PlayRecord(None, None, None, initial_state, None, -1),
-            PlayRecord("pimc", 1.1, 100, second_state, "pimc_1.1_100", first_player),
+            PlayRecord(None, None, None, initial_state, None, -1, 1.4),
+            PlayRecord("pimc", 1.1, 100, second_state, "pimc_1.1_100", first_player, 0.0000003),
         ]
         self.recorder.save_record_list(game_id, record_list)
         self.recorder.save_winner(game_id, 0)

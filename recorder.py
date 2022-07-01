@@ -100,6 +100,7 @@ class Recorder:
                 "p4_tiles TEXT,"
                 "play_number INTEGER,"
                 "suit_played INTEGER,"
+                "seconds_elapsed REAL,"
                 "FOREIGN KEY (game_id) REFERENCES game(game_id)"
                 ") "
             )
@@ -192,9 +193,10 @@ class Recorder:
                     "p2_tiles,"
                     "p3_tiles,"
                     "p4_tiles,"
-                    "play_number"
+                    "play_number,"
+                    "seconds_elapsed"   
                     ")"
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)"
                 ),
                 (
                     game_id,
@@ -210,6 +212,7 @@ class Recorder:
                     json.dumps(state._tiles_by_player[2], cls=SetEncoder),
                     json.dumps(state._tiles_by_player[3], cls=SetEncoder),
                     idx,
+                    play_record.seconds_elapsed
                 ),
             )
             self.conn.commit()

@@ -1,3 +1,4 @@
+import time
 from mctspy.tree.nodes import TwoPlayersGameMonteCarloTreeSearchNode
 from mctspy.tree.search import MonteCarloTreeSearch
 from domino_mctspy import DominoGameState
@@ -149,7 +150,9 @@ def play_game(players, recorder: Recorder):
         player_string = players[state._current_player]
         player_number = state._current_player
         algo, total_simulation_seconds, num_samples = parse_player_string(player_string)
+        start_time = time.time()
         state = play_turn(state, game, algo, total_simulation_seconds, num_samples)
+        end_time = time.time()
         game.append(state)
         play_record_list.append(
             PlayRecord(
@@ -159,6 +162,7 @@ def play_game(players, recorder: Recorder):
                 state,
                 player_string,
                 player_number,
+                end_time - start_time
             )
         )
         print_state(state)
