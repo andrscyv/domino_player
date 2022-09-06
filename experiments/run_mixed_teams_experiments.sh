@@ -1,3 +1,4 @@
+#!/bin/zsh
 num_games=$1
 
 # Optimal parameters for pimc found by grid search
