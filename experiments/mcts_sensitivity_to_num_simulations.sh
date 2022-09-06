@@ -1,5 +1,5 @@
 num_games=$1
-strong_player_time_budget=0.1
+strong_player_time_budget=1
 
 for idx in {1..$#time_budget_list}
 do 
