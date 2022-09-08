@@ -1,6 +1,7 @@
 num_games=$1
-time=0.01
-num_samples=100
+# Optimal parameters for pimc found by grid search
+time=0.01333
+num_samples=75
 #Desempeño minimo
 players=pimc${time}-${num_samples}_greedy
 echo $players
