@@ -1,3 +1,5 @@
+#!/bin/zsh
+
 num_games=$1
 strong_player_time_budget=1
 
