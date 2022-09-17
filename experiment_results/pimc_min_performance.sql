@@ -28,6 +28,6 @@ select
 		case when p.player_number % 2 = 0 then p.seconds_elapsed  else 0 end
 		)*1.0/sum(case when p.player_number % 2 = 0 then 1 else 0 end)  as avg_team_2_seconds_elapsed
 from play p 
-inner join game g on g.game_id = p.game_id and g.experiment_id IN (175)
+inner join game g on g.game_id = p.game_id and g.experiment_id IN (199)
 inner join experiment e on e.experiment_id = g.experiment_id
 group by e.experiment_id 
